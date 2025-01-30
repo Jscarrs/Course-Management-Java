@@ -156,80 +156,121 @@ class Course {
 
 // Main Class
 public class CourseManagementSystem {
+    static ArrayList<Course> courses;
+    static ArrayList<Instructor> instructors;
+    static ArrayList<Student> students;
+
     public static void main(String[] args) {
-        Course course = null;
-        try (BufferedReader courseBr = new BufferedReader(new FileReader("course.csv"))) {
+
+        // Read Course Details
+        try {
+            courses = readCourses();
+            // Read Instructor Details
+            instructors = readInstructors();
+            // Read Student Details
+            students = readStudents();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        // Assign
+        assignInstructorToCourse(1, 2);
+        assignCourseToStudent(1, 1);
+        assignCourseToStudent(1, 2);
+        assignCourseToStudent(1, 3);
+
+        // Display Course Details
+        courses.get(1).displayCourseDetails();
+
+    }
+
+    private static boolean assignInstructorToCourse(int courseId, int instructorId) {
+        // TODO: Needs to check if both records exists
+        Instructor instructor = instructors.get(instructorId);
+        courses.get(courseId).assignInstructor(instructor);
+        return false;
+    }
+
+    private static boolean assignCourseToStudent(int courseId, int studentId) {
+        // TODO: Needs to check if both records exists
+        Student student = students.get(studentId);
+        courses.get(courseId).addStudent(student);
+        return false;
+    }
+
+    private static ArrayList<Course> readCourses() throws Exception {
+        ArrayList<Course> courses = new ArrayList<Course>();
+
+        try (BufferedReader courseBr = new BufferedReader(new FileReader("./data/courses.csv"))) {
             courseBr.readLine(); // Skip header
 
             String line;
             while ((line = courseBr.readLine()) != null) {
-                course = parseCourse(line);
+                courses.add(parseCourse(line));
             }
 
             courseBr.close();
 
         } catch (InvalidCSVFormatException e) {
-            System.out.println(e);
-            return;
+            // Custom exception - Incorrect csv format || Missing or invalid data
+            throw e;
         } catch (FileNotFoundException e) {
-            System.out.println("FileNotFoundException: File does not exists! (course.csv)");
-            return;
+            // File not found or can't open file (permission etc.)
+            throw new FileNotFoundException("FileNotFoundException: File does not exists! (courses.csv)");
         } catch (IOException e) {
-            System.out.println("IOException: Unable to read a file! (course.csv)");
-            return;
+            // Any other IO exceptions
+            throw new FileNotFoundException("IOException: Unable to read a file! (courses.csv)");
         }
-        // Read Instructor Details
-        try (BufferedReader instructorBr = new BufferedReader(new FileReader("instructor.csv"))) {
+        return courses;
+    }
+
+    private static ArrayList<Instructor> readInstructors() throws Exception {
+        instructors = new ArrayList<Instructor>();
+
+        try (BufferedReader instructorBr = new BufferedReader(new FileReader("./data/instructors.csv"))) {
             instructorBr.readLine(); // Skip header
 
             String line;
             while ((line = instructorBr.readLine()) != null) {
-                Instructor instructor = parseInstructor(line);
-                course.assignInstructor(instructor);
+                instructors.add(parseInstructor(line));
             }
 
             instructorBr.close();
-
         } catch (InvalidCSVFormatException e) {
-            // Incorrect csv format || Missing or invalid data
-            System.out.println(e);
-            return;
+            // Custom exception - Incorrect csv format || Missing or invalid data
+            throw e;
         } catch (FileNotFoundException e) {
             // File not found or can't open file (permission etc.)
-            System.out.println("FileNotFoundException: File does not exists! (instructor.csv)");
-            return;
+            throw new FileNotFoundException("FileNotFoundException: File does not exists! (instructors.csv)");
         } catch (IOException e) {
             // Any other IO exceptions
-            System.out.println("IOException: Unable to read a file! (instructor.csv)");
-            return;
+            throw new FileNotFoundException("IOException: Unable to read a file! (instructors.csv)");
         }
+        return instructors;
+    }
 
-        // Read Student Details
-        try (BufferedReader br = new BufferedReader(new FileReader("student.csv"))) {
+    private static ArrayList<Student> readStudents() throws Exception {
+        students = new ArrayList<Student>();
+
+        try (BufferedReader br = new BufferedReader(new FileReader("./data/students.csv"))) {
             br.readLine(); // Skip header
 
             String line;
             while ((line = br.readLine()) != null) {
-                Student student = parseStudent(line);
-                course.addStudent(student);
+                students.add(parseStudent(line));
             }
             br.close();
         } catch (InvalidCSVFormatException e) {
-            // Incorrect csv format || Missing or invalid data
-            System.out.println(e);
-            return;
+            // Custom exception - Incorrect csv format || Missing or invalid data
+            throw e;
         } catch (FileNotFoundException e) {
             // File not found or can't open file (permission etc.)
-            System.out.println("FileNotFoundException: File does not exists! (student.csv)");
-            return;
+            throw new FileNotFoundException("FileNotFoundException: File does not exists! (students.csv)");
         } catch (IOException e) {
             // Any other IO exceptions
-            System.out.println("IOException: Unable to read a file! (student.csv)");
-            return;
+            throw new FileNotFoundException("IOException: Unable to read a file! (students.csv)");
         }
-
-        // Display Course Details
-        course.displayCourseDetails();
+        return students;
     }
 
     private static Instructor parseInstructor(String line) throws InvalidCSVFormatException {
