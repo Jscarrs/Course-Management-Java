@@ -1,6 +1,4 @@
-
-
-### **📚 University Course Management System**  
+# **📚 University Course Management System**  
 _A Java-based system for managing university courses, instructors, and students using binary files with random access._  
 
 ---
@@ -9,7 +7,9 @@ _A Java-based system for managing university courses, instructors, and students 
 ✅ Store and retrieve data in **binary format** for efficient random access.  
 ✅ Support for **students, courses, and instructors** with CRUD operations.  
 ✅ **Assign** instructors to courses and students to courses.  
-✅ **Delete records** while maintaining relational integrity.  
+✅ **Prevent duplicate assignments and ensure relationship integrity.**  
+✅ **Prompt to update Instructors for Courses that already have an assignment.**  
+✅ **Delete records while maintaining relational consistency.**  
 ✅ **Reuse deleted space** to optimize storage.  
 ✅ **Text-based menu** for user-friendly interaction.  
 
@@ -19,7 +19,7 @@ _A Java-based system for managing university courses, instructors, and students 
 1️⃣ [CSV to Binary File Conversion](#1️⃣-csv-to-binary-file-conversion)  
 2️⃣ [Adding New Records](#2️⃣-adding-new-records)  
 3️⃣ [Updating Records](#3️⃣-updating-records)  
-4️⃣ [Assigning an Instructor to a Course](#4️⃣-assigning-an-instructor-to-a-course)  
+4️⃣ [Assigning an Instructor to a Course](#4️⃣-assigning-an-instructor-to-a-course-with-update-option)  
 5️⃣ [Assigning a Student to a Course](#5️⃣-assigning-a-student-to-a-course)  
 6️⃣ [Deleting Records](#6️⃣-deleting-records)  
 7️⃣ [Listing and Searching Records](#7️⃣-listing-and-searching-records)  
@@ -54,16 +54,37 @@ _A Java-based system for managing university courses, instructors, and students 
 
 ---
 
-## **4️⃣ Assigning an Instructor to a Course**
-- **Validation Before Assigning:**
-  - Ensure both **Instructor** and **Course** exist before proceeding.
-- **Prevent Duplicate Assignments:**
-  - If an assignment already exists, notify the user and avoid duplication.
-- **Handling Binary File:**
-  - If `course_instructor.bin` does not exist, create it.
-  - Append new assignments if the file exists.
-- **Function:**  
-  - `assignInstructorToCourse()`
+## **4️⃣ Assigning an Instructor to a Course (With Update Option)**
+### **✅ Steps:**
+1. **Verify Instructor & Course Existence:**  
+   - Check if both `Instructor` and `Course` exist in their respective binary files.  
+
+2. **Enforce One Instructor Per Course Rule:**  
+   - **Before assigning, check if the Course is already assigned to an Instructor.**  
+   - If assigned, prompt the user:  
+     ```plaintext
+     ⚠️ This Course is already assigned to Instructor XYZ. 
+     Do you want to update the Instructor? (Y/N)
+     ```
+   - **If "Yes" → Update the assigned Instructor**  
+   - **If "No" → Keep the existing assignment unchanged.**  
+
+3. **Allow One Instructor to Teach Multiple Courses:**  
+   - An Instructor can be assigned to **multiple courses**, so only **Course-to-Instructor conflicts** need to be checked.
+
+4. **Prevent Duplicate Assignments:**  
+   - If the exact **Course-Instructor pair** already exists, notify the user and avoid duplication.
+
+5. **Handling Binary File:**  
+   - If `course_instructor.bin` does not exist, create it.  
+   - **If updating, overwrite the existing Instructor ID for that Course.**  
+   - Append new assignments **only if the Course does not already have an Instructor or if the user confirms an update.**  
+
+### **✅ Function:**  
+- `assignInstructorToCourse()`
+  - **Ensures each Course has only one Instructor.**
+  - **Allows one Instructor to be assigned to multiple Courses.**
+  - **Prompts for Instructor update if the Course already has an assigned Instructor.**
 
 ---
 
@@ -135,33 +156,10 @@ _A Java-based system for managing university courses, instructors, and students 
 ---
 
 ## **🔧 Technologies Used**
-- **Java** (`RandomAccessFile`, `FileChannel`)
+- **Java** (`RandomAccessFile`)
 - **Binary File Storage**
 - **Serialization & Deserialization**
 - **Exception Handling**
 - **Custom Data Structures**
 
 ---
-
-## **🛠 Installation & Setup**
-1. Clone the repository:  
-   ```bash
-   git clone https://github.com/your-repo/university-course-management.git
-   ```
-2. Navigate to the project folder:  
-   ```bash
-   cd university-course-management
-   ```
-3. Compile the project:  
-   ```bash
-   javac Main.java
-   ```
-4. Run the program:  
-   ```bash
-   java Main
-   ```
-
----
-
-## **📜 License**
-This project is open-source under the **MIT License**.
