@@ -15,6 +15,8 @@ _A Java-based system for managing university courses, instructors, and students 
 
 ---
 
+
+
 ## **📌 Table of Contents**
 1️⃣ [CSV to Binary File Conversion](#1️⃣-csv-to-binary-file-conversion)  
 2️⃣ [Adding New Records](#2️⃣-adding-new-records)  
@@ -25,6 +27,37 @@ _A Java-based system for managing university courses, instructors, and students 
 7️⃣ [Listing and Searching Records](#7️⃣-listing-and-searching-records)  
 8️⃣ [Menu Implementation & Code Integration](#8️⃣-menu-implementation--code-integration)  
 9️⃣ [Optimizing Insert & Delete (Reuse Space)](#9️⃣-optimizing-insert--delete-reuse-space)  
+
+---
+
+## **🚀 Setup & Running in Eclipse**  
+
+### **1️. Install Java & Eclipse**  
+✅ Ensure **Java Development Kit (JDK 11 or higher)** is installed.  
+✅ Download and install **Eclipse IDE for Java Developers** from: [Eclipse Download](https://www.eclipse.org/downloads/)  
+
+---
+
+### **2️. Clone the Repository Using GitHub Desktop**  
+1. Open **GitHub Desktop**.  
+2. Click **File → Clone Repository**.  
+3. Under the **GitHub.com** tab, select **your-repo/university-course-management**.  
+4. Choose a local path where you want to store the project.  
+5. Click **Clone**.
+
+---
+
+### **3️. Import the Project into Eclipse**  
+1. Open **Eclipse IDE**.  
+2. Go to **File → Import → Existing Projects into Workspace**.  
+3. Select **Browse**, then choose the cloned repository folder from **GitHub Desktop's local path**.  
+4. Click **Finish**.
+
+---
+
+### **4️. Run the Program in Eclipse**  
+1. Open `CourseManagementSystem.java`.  
+2. Right-click inside the file and select **Run As → Java Application**.  
 
 ---
 
