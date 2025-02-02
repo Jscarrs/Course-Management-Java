@@ -5,11 +5,12 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
-
+import java.io.Serializable;
 /**
  * Subclass Instructor
  */
-public class Instructor extends Person {
+public class Instructor extends Person implements Serializable{
+	private static final long serialVersionUID = 1L;  
 	final static String filePath = "./data/instructors.csv";
 
 	private String instructorId;

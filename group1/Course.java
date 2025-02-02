@@ -6,11 +6,12 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-
+import java.io.Serializable;
 /**
  * Class Course
  */
-public class Course {
+public class Course implements Serializable{
+	private static final long serialVersionUID = 1L;  
 	final static String filePath = "./data/courses.csv";
 
 	private String courseId;
