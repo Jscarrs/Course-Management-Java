@@ -42,7 +42,10 @@ public class CourseManagementSystem {
 			System.out.println("4. List Students");
 			System.out.println("5. List Courses");
 			System.out.println("6. List Instructors");
-			System.out.println("7. Exit");
+			System.out.println("7. Update Student");
+			System.out.println("8. Update Course");
+			System.out.println("9. Update Instructor");
+			System.out.println("10. Exit");
 			System.out.print("Enter your choice: ");
 			choice = scan.nextInt();
 			scan.nextLine();
@@ -67,36 +70,46 @@ public class CourseManagementSystem {
 				InstructorManager.listInstructors();
 				break;
 			case 7:
+				StudentManager.updateStudent();
+				break;
+			case 8:
+				CourseManager.updateCourse();
+				break;
+			case 9:
+				InstructorManager.updateInstructor();
+				break;
+			case 10:
 				System.out.println("Exiting system...");
 				break;
 			default:
 				System.out.println("Invalid choice! Try again.");
 			}
-		} while (choice != 7);
+		} while (choice != 10);
 
 		scan.close();
 
 	}
 
 	// Old function - only for testing will delete later
-	private static boolean assignInstructorToCourseOld(int courseId, int instructorId) {
-		if (courseId >= courses.size() || instructorId >= instructors.size()) {
-			System.out.println("Invalid indices for instructor or course.");
-			return false;
-		}
-		Instructor instructor = instructors.get(instructorId);
-		courses.get(courseId).assignInstructor(instructor);
-		return true;
-	}
+	// private static boolean assignInstructorToCourseOld(int courseId, int instructorId) {
+	// 	if (courseId >= courses.size() || instructorId >= instructors.size()) {
+	// 		System.out.println("Invalid indices for instructor or course.");
+	// 		return false;
+	// 	}
+	// 	Instructor instructor = instructors.get(instructorId);
+	// 	courses.get(courseId).assignInstructor(instructor);
+	// 	return true;
+	// }
 
-	// Old function - only for testing will delete later
-	private static boolean assignCourseToStudentOld(int courseId, int studentId) {
-		if (courseId >= courses.size() || studentId >= students.size()) {
-			System.out.println("Invalid indices for student or course.");
-			return false;
-		}
-		Student student = students.get(studentId);
-		courses.get(courseId).addStudent(student);
-		return true;
-	}
+	// // Old function - only for testing will delete later
+	// private static boolean assignCourseToStudentOld(int courseId, int studentId) {
+	// 	if (courseId >= courses.size() || studentId >= students.size()) {
+	// 		System.out.println("Invalid indices for student or course.");
+	// 		return false;
+	// 	}
+	// 	Student student = students.get(studentId);
+	// 	courses.get(courseId).addStudent(student);
+	// 	return true;
+	// }
+
 }

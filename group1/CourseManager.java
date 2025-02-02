@@ -1,6 +1,7 @@
 package group1;
 import java.io.*;
 import java.util.ArrayList;
+import java.util.Scanner;
 
 //created course manager class to manage insertion and listing of course data and also manage save changes to file
 public class CourseManager {
@@ -21,15 +22,49 @@ public class CourseManager {
             ArrayList<Course> courses = readBinaryFile();
             courses.add(newCourse);
             writeBinaryFile(courses);
-            
-         // Append course to CSV file
-            appendToCSV(courseId, courseName, credits); 
-            
+
+            // Append course to CSV file
+            appendToCSV(courseId, courseName, credits);
+
             System.out.println("Course added successfully!");
         } catch (IOException e) {
             System.out.println("Error reading input!");
         }
     }
+    
+        public static void updateCourse() {
+        Scanner scanner = new Scanner(System.in);
+
+        System.out.print("Enter Course ID to update: ");
+        String id = scanner.nextLine();
+
+        // Load existing courses from the binary file
+        ArrayList<Course> courses = readBinaryFile();
+        boolean found = false;
+
+        for (Course course : courses) {
+            if (course.getCourseId().equals(id)) {
+                System.out.print("Enter new Course Name: ");
+                String name = scanner.nextLine();
+                System.out.print("Enter new Credits: ");
+                int credits = Integer.parseInt(scanner.nextLine());
+
+                course.setCourseName(name);
+                course.setCredits(credits);
+                found = true;
+                break;
+            }
+        }
+
+        if (found) {
+            // Save updated course list back to binary file
+            writeBinaryFile(courses);
+            System.out.println("Course updated successfully!");
+        } else {
+            System.out.println("Course with ID " + id + " not found.");
+        }
+        scanner.close();
+    } 
 
     public static void listCourses() {
         ArrayList<Course> courses = readBinaryFile();
@@ -45,6 +80,58 @@ public class CourseManager {
             System.out.println("Credits: " + course.getCredits());
             System.out.println("----------------------------");
         }
+    }
+
+    public static void listCourseInstructor() {
+        Scanner scanner = new Scanner(System.in);
+        System.out.print("Enter Course ID to find instructor: ");
+        String id = scanner.nextLine();
+
+        ArrayList<Course> courses = readBinaryFile();
+        boolean found = false;
+
+        for (Course course : courses) {
+            if (course.getCourseId().equals(id)) {
+                System.out.println("Instructor for Course ID " + id + ": " + course.getInstructor());
+                found = true;
+                break;
+            }
+        }
+
+        if (!found) {
+            System.out.println("Course with ID " + id + " not found.");
+        }
+        scanner.close();
+    }
+
+    public static void listCourseStudent() {
+        Scanner scanner = new Scanner(System.in);
+        System.out.print("Enter Course ID to find students: ");
+        String id = scanner.nextLine();
+
+        ArrayList<Course> courses = readBinaryFile();
+        boolean found = false;
+
+        for (Course course : courses) {
+            if (course.getCourseId().equals(id)) {
+                ArrayList<Student> students = course.getStudents();
+                if (students.isEmpty()) {
+                    System.out.println("No students enrolled in Course ID " + id);
+                } else {
+                    System.out.println("Students enrolled in Course ID " + id + ":");
+                    for (Student student : students) {
+                        System.out.println(student.getName());
+                    }
+                }
+                found = true;
+                break;
+            }
+        }
+
+        if (!found) {
+            System.out.println("Course with ID " + id + " not found.");
+        }
+        scanner.close();
     }
 
     @SuppressWarnings("unchecked")

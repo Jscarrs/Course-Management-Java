@@ -27,6 +27,14 @@ public class Course implements Serializable{
 		this.students = new ArrayList<>();
 	}
 
+	public void setCourseName(String courseName) {
+		this.courseName = courseName;
+	}
+
+	public void setCredits(int credits) {
+		this.credits = credits;
+	}
+
 	public String getCourseId() {
 		return courseId;
 	}
@@ -43,8 +51,29 @@ public class Course implements Serializable{
 		this.instructor = instructor;
 	}
 
+	public Instructor getInstructor() {
+		return instructor;
+	}
+
 	public void addStudent(Student student) {
 		students.add(student);
+	}
+
+	public void removeStudent(Student student) {
+		students.remove(student);
+	}
+
+	public Student getStudent(String studentId) {
+		for (Student student : students) {
+			if (student.getStudentId().equals(studentId)) {
+				return student;
+			}
+		}
+		return null;
+	}
+	
+	public ArrayList<Student> getStudents() {
+		return new ArrayList<>(students);
 	}
 
 	public void displayCourseDetails() {

@@ -1,6 +1,7 @@
 package group1;
 import java.io.*;
 import java.util.ArrayList;
+import java.util.Scanner;
 
 //created instructor manager class to manage insertion and listing of instructor data and also manage save changes to file
 public class InstructorManager {
@@ -20,18 +21,55 @@ public class InstructorManager {
             String department = reader.readLine();
 
             Instructor newInstructor = new Instructor(instructorId, name, email, department);
-            
+
             ArrayList<Instructor> instructors = readBinaryFile();
             instructors.add(newInstructor);
             writeBinaryFile(instructors);
-            
+
             // Append instructor to CSV file
             appendToCSV(instructorId, name, email, department);
-            
+
             System.out.println("Instructor added successfully!");
         } catch (IOException e) {
             System.out.println("Error reading input!");
         }
+    }
+    
+        public static void updateInstructor() {
+        Scanner scanner = new Scanner(System.in);
+
+        System.out.print("Enter Instructor ID to update: ");
+        String id = scanner.nextLine();
+
+        // Load existing instructors from the binary file
+        ArrayList<Instructor> instructors = readBinaryFile();
+        boolean found = false;
+
+        for (Instructor instructor : instructors) {
+            if (instructor.getInstructorId().equals(id)) {
+                System.out.print("Enter new Instructor Name: ");
+                String name = scanner.nextLine();
+                System.out.print("Enter new Instructor Email: ");
+                String email = scanner.nextLine();
+                System.out.print("Enter new Department: ");
+                String department = scanner.nextLine();
+
+                instructor.setName(name);
+                instructor.setEmail(email);
+                instructor.setDepartment(department);
+                found = true;
+                break;
+            }
+        }
+
+        if (found) {
+            // Save updated instructor list back to binary file
+            writeBinaryFile(instructors);
+            System.out.println("Instructor updated successfully!");
+        } else {
+            System.out.println("Instructor with ID " + id + " not found.");
+        }
+        scanner.close();
     }
 
     public static void listInstructors() {

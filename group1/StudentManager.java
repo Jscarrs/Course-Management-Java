@@ -47,6 +47,41 @@ public class StudentManager {
         }
 
         System.out.println("Student added successfully!");
+        scanner.close();
+    }
+
+    public static void updateStudent() {
+        Scanner scanner = new Scanner(System.in);
+
+        System.out.print("Enter Student ID to update: ");
+        String id = scanner.nextLine();
+
+        // Load existing students from the binary file
+        ArrayList<Student> students = Student.readStudents();
+        boolean found = false;
+
+        for (Student student : students) {
+            if (student.getStudentId().equals(id)) {
+                System.out.print("Enter new Student Name: ");
+                String name = scanner.nextLine();
+                System.out.print("Enter new Student Email: ");
+                String email = scanner.nextLine();
+
+                student.setName(name);
+                student.setEmail(email);
+                found = true;
+                break;
+            }
+        }
+
+        if (found) {
+            // Save updated student list back to binary file
+            Student.saveStudents(students);
+            System.out.println("Student updated successfully!");
+        } else {
+            System.out.println("Student with ID " + id + " not found.");
+        }
+        scanner.close();
     }
 
     public static void listStudents() {
