@@ -82,26 +82,4 @@ public class CSVToBinaryConverter {
         }
         return null;
     }
-
-
-    public static void main(String[] args) {
-        Scanner scanner = new Scanner(System.in);
-
-        // Ask user if they want to convert CSV to Binary
-        System.out.println("Would you like to convert CSV files to binary format? (yes/no)");
-        String response = scanner.nextLine();
-
-        if ("yes".equalsIgnoreCase(response)) {
-            System.out.println("Starting conversion...");
-
-            // Call the method for each CSV file
-            convertCsvToBinary("./data/courses.csv", "./data/courses.dat", Course.class);
-            convertCsvToBinary("./data/instructors.csv", "./data/instructors.dat", Instructor.class);
-            convertCsvToBinary("./data/students.csv", "./data/students.dat", Student.class);
-        } else {
-            System.out.println("CSV to Binary conversion skipped.");
-        }
-
-        scanner.close();
-    }
 }
