@@ -4,13 +4,14 @@ import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.io.Serializable;
+import java.util.ArrayList;
+
 /**
  * Subclass Instructor
  */
-public class Instructor extends Person implements Serializable{
-	private static final long serialVersionUID = 1L;  
+public class Instructor extends Person implements Serializable {
+	private static final long serialVersionUID = 1L;
 	final static String filePath = "./data/instructors.csv";
 
 	private String instructorId;
@@ -91,5 +92,4 @@ public class Instructor extends Person implements Serializable{
 		return new Instructor(data[0], data[1], data[2], data[3]);
 	}
 
-	
 }
