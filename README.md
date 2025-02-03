@@ -109,7 +109,7 @@ _A Java-based system for managing university courses, instructors, and students 
    - If the exact **Course-Instructor pair** already exists, notify the user and avoid duplication.
 
 5. **Handling Binary File:**  
-   - If `course_instructor.bin` does not exist, create it.  
+   - If `course_instructor.dat` does not exist, create it.  
    - **If updating, overwrite the existing Instructor ID for that Course.**  
    - Append new assignments **only if the Course does not already have an Instructor or if the user confirms an update.**  
 
@@ -127,7 +127,7 @@ _A Java-based system for managing university courses, instructors, and students 
 - **Prevent Duplicate Assignments:**
   - If an assignment already exists, notify the user.
 - **Handling Binary File:**
-  - If `student_course.bin` does not exist, create it.
+  - If `student_course.dat` does not exist, create it.
   - Append new assignments if the file exists.
 - **Function:**  
   - `assignStudentToCourse()`
@@ -140,8 +140,8 @@ _A Java-based system for managing university courses, instructors, and students 
     _“This record has linked assignments. Do you want to delete them as well?”_  
   - If confirmed, delete both the assigned relationships and the main record.
 - **Affects:**  
-  - `student.bin`, `course.bin`, `instructor.bin`  
-  - `course_instructor.bin`, `student_course.bin`  
+  - `student.dat`, `course.dat`, `instructor.dat`  
+  - `course_instructor.dat`, `student_course.dat`  
 - **Functions:**  
   - `deleteStudent()`, `deleteCourse()`, `deleteInstructor()`  
   - `deleteCourseInstructorRelationship()`, `deleteStudentCourseRelationship()`
