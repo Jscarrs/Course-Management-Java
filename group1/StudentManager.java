@@ -145,6 +145,7 @@ public class StudentManager {
 		Scanner scanner = new Scanner(System.in);
 		System.out.print("Enter Student ID: ");
 		String studentId = scanner.nextLine();
+	    scanner.nextLine();
 
 		ArrayList<Student> students = Student.readStudents();
 

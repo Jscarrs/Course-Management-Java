@@ -435,7 +435,7 @@ public class CourseAssignManager implements Serializable {
 				file.writeInt(record.getStudentId());
 			}
 
-			System.out.println("Student - Deleted records: " + keepingList.size());
+			System.out.println("Deleted Student records" );
 
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -450,7 +450,7 @@ public class CourseAssignManager implements Serializable {
 				file.writeInt(record.getInstructorId());
 			}
 
-			System.out.println("Instructor - Deleted records: " + keepingList.size());
+			System.out.println("Deleted Instructor records");
 
 		} catch (IOException e) {
 			e.printStackTrace();

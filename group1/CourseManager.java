@@ -143,9 +143,10 @@ public class CourseManager {
 	}
 
 	public static void deleteCourse() {
-		Scanner scanner = new Scanner(System.in);
+		Scanner scannerd = new Scanner(System.in);
 		System.out.print("Enter Course ID: ");
-		int courseId = scanner.nextInt();
+		int courseId = scannerd.nextInt();
+	    scannerd.nextLine();
 
 		ArrayList<Course> courses = readBinaryFile();
 		boolean found = false;
@@ -170,7 +171,7 @@ public class CourseManager {
 		if (hasStudents || hasInstructor) {
 			System.out.print(
 					"This course has assigned students/instructors. Do you want to delete them as well? (yes/no): ");
-			String input = scanner.nextLine().trim().toLowerCase();
+			String input = scannerd.nextLine().trim().toLowerCase();
 
 			if (!input.equals("yes")) {
 				System.out.println("Deletion canceled.");

@@ -134,6 +134,7 @@ public class InstructorManager {
 		Scanner scanner = new Scanner(System.in);
 		System.out.print("Enter Instructor ID: ");
 		int instructorId = scanner.nextInt();
+	    scanner.nextLine();
 
 		ArrayList<Instructor> instructors = readBinaryFile();
 		boolean found = false;
