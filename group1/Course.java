@@ -4,9 +4,8 @@ import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 import java.io.Serializable;
+import java.util.ArrayList;
 /**
  * Class Course
  */
@@ -17,14 +16,11 @@ public class Course implements Serializable{
 	private String courseId;
 	private String courseName;
 	private int credits;
-	private Instructor instructor;
-	private List<Student> students;
 
 	public Course(String courseId, String courseName, int credits) {
 		this.courseId = courseId;
 		this.courseName = courseName;
 		this.credits = credits;
-		this.students = new ArrayList<>();
 	}
 
 	public void setCourseName(String courseName) {
@@ -47,55 +43,29 @@ public class Course implements Serializable{
 		return credits;
 	}
 
-	public void assignInstructor(Instructor instructor) {
-		this.instructor = instructor;
-	}
-
-	public Instructor getInstructor() {
-		return instructor;
-	}
-
-	public void addStudent(Student student) {
-		students.add(student);
-	}
-
-	public void removeStudent(Student student) {
-		students.remove(student);
-	}
-
-	public Student getStudent(String studentId) {
-		for (Student student : students) {
-			if (student.getStudentId().equals(studentId)) {
-				return student;
-			}
-		}
-		return null;
-	}
-	
-	public ArrayList<Student> getStudents() {
-		return new ArrayList<>(students);
-	}
-
 	public void displayCourseDetails() {
 		System.out.println("Course ID: " + courseId);
 		System.out.println("Course Name: " + courseName);
 		System.out.println("Credits: " + credits);
-		if (instructor != null) {
-			System.out.println("\nInstructor Details:");
-			instructor.displayDetails();
-		} else {
-			System.out.println("\nNo instructor assigned yet.");
-		}
+		
+		// TODO: Read it from file
+//		if (instructor != null) {
+//			System.out.println("\nInstructor Details:");
+//			instructor.displayDetails();
+//		} else {
+//			System.out.println("\nNo instructor assigned yet.");
+//		}
 
 		System.out.println("\nEnrolled Students:");
-		if (students.isEmpty()) {
-			System.out.println("No students enrolled yet.");
-		} else {
-			for (Student student : students) {
-				student.displayDetails();
-				System.out.println();
-			}
-		}
+		// TODO: Read it from file
+//		if (students.isEmpty()) {
+//			System.out.println("No students enrolled yet.");
+//		} else {
+//			for (Student student : students) {
+//				student.displayDetails();
+//				System.out.println();
+//			}
+//		}
 	}
 
 	public static ArrayList<Course> readCourses() throws Exception {

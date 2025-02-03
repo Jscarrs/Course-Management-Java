@@ -9,3 +9,6 @@
 /StudentManager.class
 /CourseManager.class
 /InstructorManager.class
+/CourseAssignManager.class
+/CourseInstructor.class
+/CourseStudents.class

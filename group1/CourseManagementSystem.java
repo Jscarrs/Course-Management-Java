@@ -47,10 +47,7 @@ public class CourseManagementSystem {
 			System.out.println("9. Update Instructor");
 			System.out.println("10. Assign Instructor to Course");
 			System.out.println("11. Assign Student to Course");
-			System.out.println("12. List Course - Instructors");
-			System.out.println("13. List Course - Students");
-
-			System.out.println("14. Exit");
+			System.out.println("12. Exit");
 			System.out.print("Enter your choice: ");
 			choice = scan.nextInt();
 			scan.nextLine();
@@ -84,24 +81,16 @@ public class CourseManagementSystem {
 				InstructorManager.updateInstructor();
 				break;
 			case 10:
-				CourseAssignManager.assignInstructorToCourse();
 				break;
 			case 11:
-				CourseAssignManager.assignStudentToCourse();
 				break;
 			case 12:
-				CourseAssignManager.displayAllInstructorAssignments();
-				break;
-			case 13:
-				CourseAssignManager.displayAllStudentAssignments();
-				break;
-			case 14:
 				System.out.println("Exiting system...");
 				break;
 			default:
 				System.out.println("Invalid choice! Try again.");
 			}
-		} while (choice != 14);
+		} while (choice != 10);
 
 		scan.close();
 

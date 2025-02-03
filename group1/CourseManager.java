@@ -63,7 +63,7 @@ public class CourseManager {
         } else {
             System.out.println("Course with ID " + id + " not found.");
         }
-        scanner.close();
+//        scanner.close();
     } 
 
     public static void listCourses() {
@@ -83,55 +83,59 @@ public class CourseManager {
     }
 
     public static void listCourseInstructor() {
-        Scanner scanner = new Scanner(System.in);
-        System.out.print("Enter Course ID to find instructor: ");
-        String id = scanner.nextLine();
+		// TODO: Read it from file
 
-        ArrayList<Course> courses = readBinaryFile();
-        boolean found = false;
-
-        for (Course course : courses) {
-            if (course.getCourseId().equals(id)) {
-                System.out.println("Instructor for Course ID " + id + ": " + course.getInstructor());
-                found = true;
-                break;
-            }
-        }
-
-        if (!found) {
-            System.out.println("Course with ID " + id + " not found.");
-        }
-        scanner.close();
+//        Scanner scanner = new Scanner(System.in);
+//        System.out.print("Enter Course ID to find instructor: ");
+//        String id = scanner.nextLine();
+//
+//        ArrayList<Course> courses = readBinaryFile();
+//        boolean found = false;
+//
+//        for (Course course : courses) {
+//            if (course.getCourseId().equals(id)) {
+//                System.out.println("Instructor for Course ID " + id + ": " + course.getInstructor());
+//                found = true;
+//                break;
+//            }
+//        }
+//
+//        if (!found) {
+//            System.out.println("Course with ID " + id + " not found.");
+//        }
+//        scanner.close();
     }
 
     public static void listCourseStudent() {
-        Scanner scanner = new Scanner(System.in);
-        System.out.print("Enter Course ID to find students: ");
-        String id = scanner.nextLine();
+		// TODO: Read it from file
 
-        ArrayList<Course> courses = readBinaryFile();
-        boolean found = false;
-
-        for (Course course : courses) {
-            if (course.getCourseId().equals(id)) {
-                ArrayList<Student> students = course.getStudents();
-                if (students.isEmpty()) {
-                    System.out.println("No students enrolled in Course ID " + id);
-                } else {
-                    System.out.println("Students enrolled in Course ID " + id + ":");
-                    for (Student student : students) {
-                        System.out.println(student.getName());
-                    }
-                }
-                found = true;
-                break;
-            }
-        }
-
-        if (!found) {
-            System.out.println("Course with ID " + id + " not found.");
-        }
-        scanner.close();
+//        Scanner scanner = new Scanner(System.in);
+//        System.out.print("Enter Course ID to find students: ");
+//        String id = scanner.nextLine();
+//
+//        ArrayList<Course> courses = readBinaryFile();
+//        boolean found = false;
+//
+//        for (Course course : courses) {
+//            if (course.getCourseId().equals(id)) {
+//                ArrayList<Student> students = course.getStudents();
+//                if (students.isEmpty()) {
+//                    System.out.println("No students enrolled in Course ID " + id);
+//                } else {
+//                    System.out.println("Students enrolled in Course ID " + id + ":");
+//                    for (Student student : students) {
+//                        System.out.println(student.getName());
+//                    }
+//                }
+//                found = true;
+//                break;
+//            }
+//        }
+//
+//        if (!found) {
+//            System.out.println("Course with ID " + id + " not found.");
+//        }
+//        scanner.close();
     }
 
     @SuppressWarnings("unchecked")
@@ -164,6 +168,4 @@ public class CourseManager {
             System.out.println("Error appending course to CSV!");
         }
     }
-
-
 }
