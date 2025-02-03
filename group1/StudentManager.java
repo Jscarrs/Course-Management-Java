@@ -149,7 +149,7 @@ public class StudentManager {
 		ArrayList<Student> students = Student.readStudents();
 
 		for (Student student : students) {
-			if (student.getStudentId() == studentId) {
+			if (student.getStudentId().equals(studentId)) {
 				System.out.println("\nStudent Found:");
 				System.out.println("Student ID: " + student.getStudentId());
 				System.out.println("Name: " + student.getName());

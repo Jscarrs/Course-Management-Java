@@ -183,7 +183,7 @@ public class InstructorManager {
 		ArrayList<Instructor> instructors = readBinaryFile();
 
 		for (Instructor instructor : instructors) {
-			if (instructor.getInstructorId() == instructorId) {
+			if (instructor.getInstructorId().equals(instructorId)) {
 				System.out.println("\nInstructor Found:");
 				System.out.println("Instructor ID: " + instructor.getInstructorId());
 				System.out.println("Name: " + instructor.getName());

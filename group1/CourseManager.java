@@ -136,6 +136,7 @@ public class CourseManager {
 				System.out.println("Course ID: " + course.getCourseId());
 				System.out.println("Course Name: " + course.getCourseName());
 				System.out.println("Credits: " + course.getCredits());
+				return;
 			}
 		}
 		System.out.println("Course with ID " + courseId + " not found.");
