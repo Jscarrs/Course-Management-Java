@@ -45,7 +45,12 @@ public class CourseManagementSystem {
 			System.out.println("7. Update Student");
 			System.out.println("8. Update Course");
 			System.out.println("9. Update Instructor");
-			System.out.println("10. Exit");
+			System.out.println("10. Assign Instructor to Course");
+			System.out.println("11. Assign Student to Course");
+			System.out.println("12. List Course - Instructors");
+			System.out.println("13. List Course - Students");
+
+			System.out.println("14. Exit");
 			System.out.print("Enter your choice: ");
 			choice = scan.nextInt();
 			scan.nextLine();
@@ -79,37 +84,27 @@ public class CourseManagementSystem {
 				InstructorManager.updateInstructor();
 				break;
 			case 10:
+				CourseAssignManager.assignInstructorToCourse();
+				break;
+			case 11:
+				CourseAssignManager.assignStudentToCourse();
+				break;
+			case 12:
+				CourseAssignManager.displayAllInstructorAssignments();
+				break;
+			case 13:
+				CourseAssignManager.displayAllStudentAssignments();
+				break;
+			case 14:
 				System.out.println("Exiting system...");
 				break;
 			default:
 				System.out.println("Invalid choice! Try again.");
 			}
-		} while (choice != 10);
+		} while (choice != 14);
 
 		scan.close();
 
 	}
-
-	// Old function - only for testing will delete later
-	// private static boolean assignInstructorToCourseOld(int courseId, int instructorId) {
-	// 	if (courseId >= courses.size() || instructorId >= instructors.size()) {
-	// 		System.out.println("Invalid indices for instructor or course.");
-	// 		return false;
-	// 	}
-	// 	Instructor instructor = instructors.get(instructorId);
-	// 	courses.get(courseId).assignInstructor(instructor);
-	// 	return true;
-	// }
-
-	// // Old function - only for testing will delete later
-	// private static boolean assignCourseToStudentOld(int courseId, int studentId) {
-	// 	if (courseId >= courses.size() || studentId >= students.size()) {
-	// 		System.out.println("Invalid indices for student or course.");
-	// 		return false;
-	// 	}
-	// 	Student student = students.get(studentId);
-	// 	courses.get(courseId).addStudent(student);
-	// 	return true;
-	// }
 
 }
