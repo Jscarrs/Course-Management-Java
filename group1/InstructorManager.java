@@ -69,7 +69,7 @@ public class InstructorManager {
         } else {
             System.out.println("Instructor with ID " + id + " not found.");
         }
-        scanner.close();
+//        scanner.close();
     }
 
     public static void listInstructors() {

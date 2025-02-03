@@ -47,7 +47,7 @@ public class StudentManager {
         }
 
         System.out.println("Student added successfully!");
-        scanner.close();
+        // scanner.close();
     }
 
     public static void updateStudent() {
@@ -66,7 +66,8 @@ public class StudentManager {
                 String name = scanner.nextLine();
                 System.out.print("Enter new Student Email: ");
                 String email = scanner.nextLine();
-
+//                scanner.close();
+                
                 student.setName(name);
                 student.setEmail(email);
                 found = true;
@@ -81,7 +82,7 @@ public class StudentManager {
         } else {
             System.out.println("Student with ID " + id + " not found.");
         }
-        scanner.close();
+
     }
 
     public static void listStudents() {
