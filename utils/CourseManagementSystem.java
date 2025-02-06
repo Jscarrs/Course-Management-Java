@@ -12,7 +12,7 @@ import service.InstructorService;
 import service.StudentService;
 
 /**
- * Main class
+ * Main class - Old class will be deleted
  */
 public class CourseManagementSystem {
 
@@ -21,9 +21,9 @@ public class CourseManagementSystem {
 	public static ArrayList<Student> students;
 	static Scanner scan = new Scanner(System.in);
 
-	public static void main(String[] args) {
-		showMenu(true);
-	}
+//	public static void main(String[] args) {
+//		showMenu(true);
+//	}
 
 	private static void showMenu(boolean isConvertFile) {
 		if (isConvertFile) {
