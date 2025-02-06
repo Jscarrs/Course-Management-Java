@@ -8,12 +8,27 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
+import model.CourseInstructor;
+import model.CourseStudents;
+
 public class CourseAssignService implements Serializable {
 
 	private static final long serialVersionUID = 1L;
-	private static final String filePathStudents = "./data/course_students.dat";
-	private static final String filePathInstructor = "./data/course_instructor.dat";
-	private static final Scanner scanner = new Scanner(System.in);
+	final static String filePathStudents = "./data/course_students.dat";
+	final static String filePathInstructor = "./data/course_instructor.dat";
+	private static Scanner scanner = new Scanner(System.in);
+
+	private static void isFileExists(String filePath) {
+		File file = new File(filePath);
+		try {
+			if (!file.exists()) {
+				file.createNewFile();
+				System.out.println("Created new file: " + filePath);
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
 
 	public static void assignInstructorToCourse() {
 		System.out.print("Enter course id: ");
@@ -21,8 +36,9 @@ public class CourseAssignService implements Serializable {
 		System.out.print("Enter instructor id: ");
 		int instructorId = scanner.nextInt();
 
+		isFileExists(filePathInstructor);
+
 		if (isIntructorAssignedToCourse(courseId)) {
-			System.out.println("Instructor is already assigned to this course.");
 			return;
 		}
 
@@ -42,8 +58,9 @@ public class CourseAssignService implements Serializable {
 		System.out.print("Enter student id: ");
 		int studentId = scanner.nextInt();
 
+		isFileExists(filePathStudents);
+
 		if (isStudentCourseAssigned(courseId, studentId)) {
-			System.out.println("Student is already assigned to this course.");
 			return;
 		}
 
@@ -57,12 +74,17 @@ public class CourseAssignService implements Serializable {
 		}
 	}
 
-	public static boolean isIntructorAssignedToCourse(int courseId) {
+	/*
+	 * One course only can have one instructor, but instructor can have multiple
+	 * courses
+	 */
+	public static boolean isIntructorAssignedToCourse(int pcourseId) {
 		try (RandomAccessFile file = new RandomAccessFile(filePathInstructor, "r")) {
 			while (file.getFilePointer() < file.length()) {
-				int storedCourseId = file.readInt();
-				file.readInt(); // Skip instructor ID
-				if (storedCourseId == courseId) {
+				int courseId = file.readInt();
+				int instId = file.readInt();
+				if (courseId == pcourseId) {
+					System.out.println("Course " + pcourseId + " has already assigned to instructor: " + instId);
 					return true;
 				}
 			}
@@ -72,57 +94,13 @@ public class CourseAssignService implements Serializable {
 		return false;
 	}
 
-	public static boolean isStudentCourseAssigned(int courseId, int studentId) {
-		try (RandomAccessFile file = new RandomAccessFile(filePathStudents, "r")) {
-			while (file.getFilePointer() < file.length()) {
-				int storedCourseId = file.readInt();
-				int storedStudentId = file.readInt();
-				if (storedCourseId == courseId && storedStudentId == studentId) {
-					return true;
-				}
-			}
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		return false;
-	}
-
-	public static boolean checkStudentAssignedToCourse(int courseId) {
-		try (RandomAccessFile file = new RandomAccessFile(filePathStudents, "r")) {
-			while (file.getFilePointer() < file.length()) {
-				int assignedCourseId = file.readInt();
-				file.readInt(); // Skip studentId
-				if (assignedCourseId == courseId) {
-					return true;
-				}
-			}
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		return false;
-	}
-
-	public static boolean checkStudentHasCourse(int studentId) {
-		try (RandomAccessFile file = new RandomAccessFile(filePathStudents, "r")) {
-			while (file.getFilePointer() < file.length()) {
-				file.readInt(); // Skip courseId
-				int assignedStudentId = file.readInt();
-				if (assignedStudentId == studentId) {
-					return true;
-				}
-			}
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		return false;
-	}
-
-	public static boolean checkIntructorAssignedToCourse(int courseId) {
+	// Used in delete functions
+	public static boolean checkIntructorAssignedToCourse(int pcourseId) {
 		try (RandomAccessFile file = new RandomAccessFile(filePathInstructor, "r")) {
 			while (file.getFilePointer() < file.length()) {
-				int assignedCourseId = file.readInt();
-				file.readInt(); // Skip instructorId
-				if (assignedCourseId == courseId) {
+				int courseId = file.readInt();
+				file.readInt();// skipping
+				if (courseId == pcourseId) {
 					return true;
 				}
 			}
@@ -132,12 +110,13 @@ public class CourseAssignService implements Serializable {
 		return false;
 	}
 
-	public static boolean checkIntructorHasCourse(int instructorId) {
+	// Used in delete functions
+	public static boolean checkIntructorHasCourse(int pinstructorId) {
 		try (RandomAccessFile file = new RandomAccessFile(filePathInstructor, "r")) {
 			while (file.getFilePointer() < file.length()) {
-				file.readInt(); // Skip courseId
-				int assignedInstructorId = file.readInt();
-				if (assignedInstructorId == instructorId) {
+				file.readInt(); // skipping
+				int instId = file.readInt();
+				if (instId == pinstructorId) {
 					return true;
 				}
 			}
@@ -147,75 +126,334 @@ public class CourseAssignService implements Serializable {
 		return false;
 	}
 
-	public static void deleteAllStudentFromCourse(int courseId) {
-		deleteFromFile(filePathStudents, courseId, true);
+	// Used in delete functions
+	public static boolean checkStudentAssignedToCourse(int pcourse) {
+		try (RandomAccessFile file = new RandomAccessFile(filePathStudents, "r")) {
+			while (file.getFilePointer() < file.length()) {
+				int courseId = file.readInt();
+				file.readInt();// skipping
+				if (courseId == pcourse) {
+					return true;
+				}
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return false;
 	}
 
-	public static void deleteAllInstructorFromCourse(int courseId) {
-		deleteFromFile(filePathInstructor, courseId, true);
+	// Used in delete functions
+	public static boolean checkStudentHasCourse(int pstudentId) {
+		try (RandomAccessFile file = new RandomAccessFile(filePathStudents, "r")) {
+			while (file.getFilePointer() < file.length()) {
+				file.readInt(); // skipping
+				int studentId = file.readInt();
+				if (studentId == pstudentId) {
+					return true;
+				}
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return false;
 	}
 
-	public static void deleteAllCourseFromInstructor(int instructorId) {
-		deleteFromFile(filePathInstructor, instructorId, false);
+	/*
+	 * Course and Student has many to many relation but we need to avoid duplicate
+	 * records
+	 */
+	public static boolean isStudentCourseAssigned(int pcourseId, int pstudentId) {
+		try (RandomAccessFile file = new RandomAccessFile(filePathInstructor, "r")) {
+			while (file.getFilePointer() < file.length()) {
+				int courseId = file.readInt();
+				int studentId = file.readInt();
+				if (courseId == pcourseId && studentId == pstudentId) {
+					System.out.println("Course " + pcourseId + " has already assigned to student: " + pstudentId);
+					return true;
+				}
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return false;
 	}
 
-	public static void deleteAllCourseFromStudent(int studentId) {
-		deleteFromFile(filePathStudents, studentId, false);
+	public static List<CourseInstructor> getAllInstructorAssignments() {
+		isFileExists(filePathInstructor);
+		List<CourseInstructor> assignments = new ArrayList<>();
+		try (RandomAccessFile file = new RandomAccessFile(filePathInstructor, "r")) {
+			while (file.getFilePointer() < file.length()) {
+				int courseId = file.readInt();
+				int instructorId = file.readInt();
+				assignments.add(new CourseInstructor(courseId, instructorId));
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return assignments;
 	}
 
+	public static List<CourseStudents> getAllStudentAssignments() {
+		isFileExists(filePathStudents);
+		List<CourseStudents> students = new ArrayList<>();
+		try (RandomAccessFile file = new RandomAccessFile(filePathStudents, "r")) {
+			while (file.getFilePointer() < file.length()) {
+				int courseId = file.readInt();
+				int studentId = file.readInt();
+				students.add(new CourseStudents(courseId, studentId));
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return students;
+	}
+
+	public static void displayAllInstructorAssignments() {
+		List<CourseInstructor> assignments = getAllInstructorAssignments();
+		if (assignments.isEmpty()) {
+			System.out.println("No instructor assignments found.");
+			return;
+		}
+		System.out.println("Course-Instructor Assignments:");
+		for (CourseInstructor assignment : assignments) {
+			System.out.println("Course " + assignment.getCourseId() + " - Instructor " + assignment.getInstructorId());
+		}
+	}
+
+	public static void displayAllStudentAssignments() {
+		List<CourseStudents> students = getAllStudentAssignments();
+		if (students.isEmpty()) {
+			System.out.println("No student assignments found.");
+			return;
+		}
+		System.out.println("Course-Instructor Assignments:");
+		for (CourseStudents assignment : students) {
+			System.out.println("Course " + assignment.getCourseId() + " - Student " + assignment.getStudentId());
+		}
+	}
+
+//	DELETE FUNCTIONS:
+
+	public static void checkPathDelete(boolean isCourse) {
+		String strRel = isCourse ? "course - student" : "course - instructor";
+		if (!new File(filePathStudents).exists()) {
+			System.out.println("No records found in " + strRel + " assignments.");
+			return;
+		}
+	}
+
+	// Delete specific course - student relation
 	public static void deleteCourseStudent() {
+		checkPathDelete(true);
+
 		System.out.print("Enter course id: ");
-		int courseId = scanner.nextInt();
+		int pcourseId = scanner.nextInt();
 		System.out.print("Enter student id: ");
-		int studentId = scanner.nextInt();
-		deleteFromFile(filePathStudents, courseId, studentId);
-	}
+		int pstudentId = scanner.nextInt();
 
-	public static void deleteCourseInstructor() {
-		System.out.print("Enter course id: ");
-		int courseId = scanner.nextInt();
-		System.out.print("Enter instructor id: ");
-		int instructorId = scanner.nextInt();
-		deleteFromFile(filePathInstructor, courseId, instructorId);
-	}
+		List<CourseStudents> keepingList = new ArrayList<>();
+		boolean isDeletedRec = false;
 
-	private static void deleteFromFile(String filePath, int firstId, int secondId) {
-		File file = new File(filePath);
-		if (!file.exists()) {
-			System.out.println("No records found in file: " + filePath);
-			return;
-		}
-
-		List<Integer> remainingRecords = new ArrayList<>();
-		boolean deleted = false;
-
-		try (RandomAccessFile raf = new RandomAccessFile(filePath, "r")) {
-			while (raf.getFilePointer() < raf.length()) {
-				int storedFirstId = raf.readInt();
-				int storedSecondId = raf.readInt();
-				if (storedFirstId == firstId && storedSecondId == secondId) {
-					deleted = true;
+		try (RandomAccessFile file = new RandomAccessFile(filePathStudents, "r")) {
+			while (file.getFilePointer() < file.length()) {
+				int courseId = file.readInt();
+				int studentId = file.readInt();
+				if (courseId == pcourseId && studentId == pstudentId) {
+					isDeletedRec = true;
 				} else {
-					remainingRecords.add(storedFirstId);
-					remainingRecords.add(storedSecondId);
+					keepingList.add(new CourseStudents(courseId, studentId));
 				}
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 
-		if (!deleted) {
-			System.out.println("No matching records found.");
+		if (!isDeletedRec) {
+			System.out.println("No matching record found to delete.");
+			return;
+		}
+		overrideCourseStudentFile(keepingList);
+	}
+
+	// Delete all courses from student
+	// Used in delete
+	public static void deleteAllCourseFromStudent(int pstudentId) {
+		checkPathDelete(true);
+
+		List<CourseStudents> keepingList = new ArrayList<>();
+		boolean isDeletedRec = false;
+
+		try (RandomAccessFile file = new RandomAccessFile(filePathStudents, "r")) {
+			while (file.getFilePointer() < file.length()) {
+				int courseId = file.readInt();
+				int studentId = file.readInt();
+				if (studentId == pstudentId) {
+					isDeletedRec = true;
+				} else {
+					keepingList.add(new CourseStudents(courseId, studentId));
+				}
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+		if (!isDeletedRec) {
+			System.out.println("Course - No matching records found to delete.");
 			return;
 		}
 
-		try (RandomAccessFile raf = new RandomAccessFile(filePath, "rw")) {
-			raf.setLength(0);
-			for (int i = 0; i < remainingRecords.size(); i += 2) {
-				raf.writeInt(remainingRecords.get(i));
-				raf.writeInt(remainingRecords.get(i + 1));
+		overrideCourseStudentFile(keepingList);
+	}
+
+	// Delete all students from given course
+	// Used in Delete function
+	public static void deleteAllStudentFromCourse(int pcourseId) {
+		checkPathDelete(true);
+
+		List<CourseStudents> keepingList = new ArrayList<>();
+		boolean isDeletedRec = false;
+
+		try (RandomAccessFile file = new RandomAccessFile(filePathStudents, "r")) {
+			while (file.getFilePointer() < file.length()) {
+				int courseId = file.readInt();
+				int studentId = file.readInt();
+				if (courseId == pcourseId) {
+					isDeletedRec = true;
+				} else {
+					keepingList.add(new CourseStudents(courseId, studentId));
+				}
 			}
-			System.out.println("Records updated successfully.");
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+		if (!isDeletedRec) {
+			System.out.println("No matching student records found to delete.");
+			return;
+		}
+
+		overrideCourseStudentFile(keepingList);
+	}
+
+	// Delete specific course - instructor relation
+	public static void deleteCourseInstructor() {
+		checkPathDelete(false);
+
+		System.out.print("Enter course id: ");
+		int pcourseId = scanner.nextInt();
+		System.out.print("Enter instructor id: ");
+		int pintructorId = scanner.nextInt();
+
+		List<CourseInstructor> keepingList = new ArrayList<>();
+		boolean isDeletedRec = false;
+
+		try (RandomAccessFile file = new RandomAccessFile(filePathInstructor, "r")) {
+			while (file.getFilePointer() < file.length()) {
+				int courseId = file.readInt();
+				int instructorId = file.readInt();
+				if (courseId == pcourseId && instructorId == pintructorId) {
+					isDeletedRec = true;
+				} else {
+					keepingList.add(new CourseInstructor(courseId, instructorId));
+				}
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+		if (!isDeletedRec) {
+			System.out.println("No matching record found to delete.");
+			return;
+		}
+
+		overrideCourseInstructorFile(keepingList);
+	}
+
+	// Delete all assigned Courses from Instructor
+	// Used in delete function
+	public static void deleteAllCourseFromInstructor(int pinstructorId) {
+		checkPathDelete(false);
+
+		List<CourseInstructor> keepingList = new ArrayList<>();
+		boolean isDeletedRec = false;
+
+		try (RandomAccessFile file = new RandomAccessFile(filePathInstructor, "r")) {
+			while (file.getFilePointer() < file.length()) {
+				int courseId = file.readInt();
+				int instructorId = file.readInt();
+				if (instructorId == pinstructorId) {
+					isDeletedRec = true;
+				} else {
+					keepingList.add(new CourseInstructor(courseId, instructorId));
+				}
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+		if (!isDeletedRec) {
+			System.out.println("No matching records found to delete.");
+			return;
+		}
+
+		overrideCourseInstructorFile(keepingList);
+	}
+
+	// Delete all assigned Instructors from Course
+	// Used in Delete function
+	public static void deleteAllInstructorFromCourse(int pcourseId) {
+		checkPathDelete(false);
+
+		List<CourseInstructor> keepingList = new ArrayList<>();
+		boolean isDeletedRec = false;
+
+		try (RandomAccessFile file = new RandomAccessFile(filePathInstructor, "r")) {
+			while (file.getFilePointer() < file.length()) {
+				int courseId = file.readInt();
+				int instructorId = file.readInt();
+				if (courseId == pcourseId) {
+					isDeletedRec = true;
+				} else {
+					keepingList.add(new CourseInstructor(courseId, instructorId));
+				}
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+		if (!isDeletedRec) {
+			System.out.println("Instructor - No matching records found to delete.");
+			return;
+		}
+
+		overrideCourseInstructorFile(keepingList);
+	}
+
+	public static void overrideCourseStudentFile(List<CourseStudents> keepingList) {
+		try (RandomAccessFile file = new RandomAccessFile(filePathStudents, "rw")) {
+			file.setLength(0);
+			for (CourseStudents record : keepingList) {
+				file.writeInt(record.getCourseId());
+				file.writeInt(record.getStudentId());
+			}
+
+			System.out.println("Deleted Student records");
+
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
+	public static void overrideCourseInstructorFile(List<CourseInstructor> keepingList) {
+		try (RandomAccessFile file = new RandomAccessFile(filePathInstructor, "rw")) {
+			file.setLength(0);
+			for (CourseInstructor record : keepingList) {
+				file.writeInt(record.getCourseId());
+				file.writeInt(record.getInstructorId());
+			}
+
+			System.out.println("Deleted Instructor records");
+
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

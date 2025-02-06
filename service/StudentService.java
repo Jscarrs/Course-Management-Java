@@ -1,16 +1,11 @@
 package service;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Scanner;
 
@@ -18,7 +13,6 @@ import model.Student;
 
 public class StudentService {
 	private static final String FILE_PATH = "./data/students.dat";
-	private static final String CSV_PATH = "./data/students.csv";
 
 	public static void addStudent() {
 		Scanner scanner = new Scanner(System.in);
@@ -42,7 +36,6 @@ public class StudentService {
 		students.add(newStudent);
 		saveStudents(students);
 
-		appendToCSV(id, name, email);
 		System.out.println("Student added successfully!");
 	}
 
@@ -124,7 +117,7 @@ public class StudentService {
 				return;
 			}
 
-			CourseAssignService.deleteAllAssignmentsByStudent(studentId);
+			CourseAssignService.deleteAllCourseFromStudent(studentId);
 		}
 
 		students.removeIf(student -> student.getStudentId() == studentId);
@@ -182,36 +175,4 @@ public class StudentService {
 		}
 	}
 
-	public static void convertCsvToBinary() {
-		ArrayList<Student> students = new ArrayList<>();
-		try (BufferedReader br = new BufferedReader(new FileReader(CSV_PATH))) {
-			br.readLine();
-			String line;
-			while ((line = br.readLine()) != null) {
-				students.add(parseStudent(line));
-			}
-			saveStudents(students);
-			System.out.println("Converted students.csv to students.dat successfully.");
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
-
-	private static Student parseStudent(String line) {
-		String[] data = line.split(",");
-		if (data.length != 3) {
-			throw new RuntimeException("Invalid CSV format: Each row must have 3 fields.");
-		}
-		return new Student(Integer.parseInt(data[0]), data[1], data[2]);
-	}
-
-	private static void appendToCSV(int id, String name, String email) {
-		try (FileWriter fw = new FileWriter(CSV_PATH, true);
-				BufferedWriter bw = new BufferedWriter(fw);
-				PrintWriter out = new PrintWriter(bw)) {
-			out.println(id + "," + name + "," + email);
-		} catch (IOException e) {
-			System.out.println("Error appending student to CSV!");
-		}
-	}
 }

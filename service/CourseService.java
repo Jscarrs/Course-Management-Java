@@ -2,9 +2,7 @@ package service;
 
 import java.io.BufferedReader;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.ObjectInputStream;
@@ -12,12 +10,10 @@ import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.Scanner;
 
-import exceptions.InvalidCSVFormatException;
 import model.Course;
 
 public class CourseService {
 	private static final String FILE_PATH = "./data/courses.dat";
-	private static final String COURSE_CSV = "./data/courses.csv";
 
 	public static void addCourse() {
 		BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
@@ -168,7 +164,7 @@ public class CourseService {
 		}
 
 		boolean hasStudents = CourseAssignService.checkStudentAssignedToCourse(courseId);
-		boolean hasInstructor = CourseAssignService.checkInstructorAssignedToCourse(courseId);
+		boolean hasInstructor = CourseAssignService.checkIntructorAssignedToCourse(courseId);
 
 		if (hasStudents || hasInstructor) {
 			System.out.print(
@@ -187,45 +183,5 @@ public class CourseService {
 		courses.removeIf(course -> course.getCourseId() == courseId);
 		writeBinaryFile(courses);
 		System.out.println("Course deleted successfully.");
-	}
-
-	public static ArrayList<Course> readCoursesCSV() throws Exception {
-		ArrayList<Course> courses = new ArrayList<>();
-
-		try (BufferedReader courseBr = new BufferedReader(new FileReader(COURSE_CSV))) {
-			courseBr.readLine();
-
-			String line;
-			while ((line = courseBr.readLine()) != null) {
-				courses.add(parseCourseCSV(line));
-			}
-		} catch (InvalidCSVFormatException e) {
-			throw e;
-		} catch (FileNotFoundException e) {
-			throw new FileNotFoundException("File does not exist! (courses.csv)");
-		} catch (IOException e) {
-			throw new FileNotFoundException("Unable to read file! (courses.csv)");
-		}
-		return courses;
-	}
-
-	private static Course parseCourseCSV(String line) throws InvalidCSVFormatException {
-		String[] data = line.split(",");
-		if (data.length != 3) {
-			throw new InvalidCSVFormatException("Course data must have 3 fields!");
-		}
-		if (data[0] == null || data[0].trim().isEmpty())
-			throw new InvalidCSVFormatException("Course ID is empty!");
-		else if (data[1] == null || data[1].trim().isEmpty())
-			throw new InvalidCSVFormatException("Course name is empty!");
-		else if (data[2] == null || data[2].trim().isEmpty())
-			throw new InvalidCSVFormatException("Course credit is empty!");
-		try {
-			int courseId = Integer.parseInt(data[0]);
-			int credits = Integer.parseInt(data[2]);
-			return new Course(courseId, data[1], credits);
-		} catch (NumberFormatException e) {
-			throw new InvalidCSVFormatException("Course credit is not a valid integer!");
-		}
 	}
 }

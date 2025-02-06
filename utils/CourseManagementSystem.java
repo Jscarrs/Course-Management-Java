@@ -33,10 +33,7 @@ public class CourseManagementSystem {
 
 			if ("yes".equalsIgnoreCase(response)) {
 				System.out.println("Starting conversion...");
-				CSVToBinaryConverter.convertCsvToBinary("./data/courses.csv", "data/courses.dat", Course.class);
-				CSVToBinaryConverter.convertCsvToBinary("./data/instructors.csv", "data/instructors.dat",
-						Instructor.class);
-				CSVToBinaryConverter.convertCsvToBinary("./data/students.csv", "data/students.dat", Student.class);
+				CSVToBinaryConverter.convertAllCsvToBinary();
 			} else {
 				System.out.println("CSV to Binary conversion skipped.");
 			}
@@ -70,59 +67,59 @@ public class CourseManagementSystem {
 
 			switch (choice) {
 			case 1:
-			    StudentService.addStudent();
-			    break;
+				StudentService.addStudent();
+				break;
 			case 2:
-			    CourseService.addCourse();
-			    break;
+				CourseService.addCourse();
+				break;
 			case 3:
-			    InstructorService.addInstructor();
-			    break;
+				InstructorService.addInstructor();
+				break;
 			case 4:
-			    StudentService.updateStudent();
-			    break;
+				StudentService.updateStudent();
+				break;
 			case 5:
-			    CourseService.updateCourse();
-			    break;
+				CourseService.updateCourse();
+				break;
 			case 6:
-			    InstructorService.updateInstructor();
-			    break;
+				InstructorService.updateInstructor();
+				break;
 			case 7:
-			    CourseAssignService.assignInstructorToCourse();
-			    break;
+				CourseAssignService.assignInstructorToCourse();
+				break;
 			case 8:
-			    CourseAssignService.assignStudentToCourse();
-			    break;
+				CourseAssignService.assignStudentToCourse();
+				break;
 			case 9:
-			    StudentService.listStudents();
-			    break;
+				StudentService.listStudents();
+				break;
 			case 10:
-			    CourseService.listCourses();
-			    break;
+				CourseService.listCourses();
+				break;
 			case 11:
-			    InstructorService.listInstructors();
-			    break;
+				InstructorService.listInstructors();
+				break;
 			case 12:
-			    CourseAssignService.displayAllInstructorAssignments();
-			    break;
+				CourseAssignService.displayAllInstructorAssignments();
+				break;
 			case 13:
-			    CourseAssignService.displayAllStudentAssignments();
-			    break;
+				CourseAssignService.displayAllStudentAssignments();
+				break;
 			case 14:
-			    StudentService.searchStudentById();
-			    break;
+				StudentService.searchStudentById();
+				break;
 			case 15:
-			    InstructorService.searchInstructorById();
-			    break;
+				InstructorService.searchInstructorById();
+				break;
 			case 16:
-			    CourseService.searchCourseById();
-			    break;
+				CourseService.searchCourseById();
+				break;
 			case 17:
-			    showDeleteMenu();
-			    break;
+				showDeleteMenu();
+				break;
 			case 0:
-			    System.out.println("Exiting system...");
-			    break;
+				System.out.println("Exiting system...");
+				break;
 			default:
 				System.out.println("Invalid choice! Try again.");
 			}
