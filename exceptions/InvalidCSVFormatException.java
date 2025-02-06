@@ -1,4 +1,4 @@
-package group1;
+package exceptions;
 
 /**
 *

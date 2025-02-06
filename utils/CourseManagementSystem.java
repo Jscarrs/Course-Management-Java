@@ -1,16 +1,24 @@
-package group1;
+package utils;
 
 import java.util.ArrayList;
 import java.util.Scanner;
+
+import model.Course;
+import model.Instructor;
+import model.Student;
+import service.CourseAssignService;
+import service.CourseService;
+import service.InstructorService;
+import service.StudentService;
 
 /**
  * Main class
  */
 public class CourseManagementSystem {
 
-	static ArrayList<Course> courses;
-	static ArrayList<Instructor> instructors;
-	static ArrayList<Student> students;
+	public static ArrayList<Course> courses;
+	public static ArrayList<Instructor> instructors;
+	public static ArrayList<Student> students;
 	static Scanner scan = new Scanner(System.in);
 
 	public static void main(String[] args) {
@@ -62,52 +70,52 @@ public class CourseManagementSystem {
 
 			switch (choice) {
 			case 1:
-			    StudentManager.addStudent();
+			    StudentService.addStudent();
 			    break;
 			case 2:
-			    CourseManager.addCourse();
+			    CourseService.addCourse();
 			    break;
 			case 3:
-			    InstructorManager.addInstructor();
+			    InstructorService.addInstructor();
 			    break;
 			case 4:
-			    StudentManager.updateStudent();
+			    StudentService.updateStudent();
 			    break;
 			case 5:
-			    CourseManager.updateCourse();
+			    CourseService.updateCourse();
 			    break;
 			case 6:
-			    InstructorManager.updateInstructor();
+			    InstructorService.updateInstructor();
 			    break;
 			case 7:
-			    CourseAssignManager.assignInstructorToCourse();
+			    CourseAssignService.assignInstructorToCourse();
 			    break;
 			case 8:
-			    CourseAssignManager.assignStudentToCourse();
+			    CourseAssignService.assignStudentToCourse();
 			    break;
 			case 9:
-			    StudentManager.listStudents();
+			    StudentService.listStudents();
 			    break;
 			case 10:
-			    CourseManager.listCourses();
+			    CourseService.listCourses();
 			    break;
 			case 11:
-			    InstructorManager.listInstructors();
+			    InstructorService.listInstructors();
 			    break;
 			case 12:
-			    CourseAssignManager.displayAllInstructorAssignments();
+			    CourseAssignService.displayAllInstructorAssignments();
 			    break;
 			case 13:
-			    CourseAssignManager.displayAllStudentAssignments();
+			    CourseAssignService.displayAllStudentAssignments();
 			    break;
 			case 14:
-			    StudentManager.searchStudentById();
+			    StudentService.searchStudentById();
 			    break;
 			case 15:
-			    InstructorManager.searchInstructorById();
+			    InstructorService.searchInstructorById();
 			    break;
 			case 16:
-			    CourseManager.searchCourseById();
+			    CourseService.searchCourseById();
 			    break;
 			case 17:
 			    showDeleteMenu();
@@ -140,19 +148,19 @@ public class CourseManagementSystem {
 
 			switch (choice) {
 			case 1:
-				StudentManager.deleteStudent();
+				StudentService.deleteStudent();
 				break;
 			case 2:
-				CourseManager.deleteCourse();
+				CourseService.deleteCourse();
 				break;
 			case 3:
-				InstructorManager.deleteInstructor();
+				InstructorService.deleteInstructor();
 				break;
 			case 4:
-				CourseAssignManager.deleteCourseInstructor();
+				CourseAssignService.deleteCourseInstructor();
 				break;
 			case 5:
-				CourseAssignManager.deleteCourseStudent();
+				CourseAssignService.deleteCourseStudent();
 				break;
 			case 0:
 				System.out.println("Exiting system...");

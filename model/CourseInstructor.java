@@ -1,4 +1,4 @@
-package group1;
+package model;
 
 import java.io.Serializable;
 
@@ -7,6 +7,13 @@ public class CourseInstructor implements Serializable {
 
 	private int courseId;
 	private int instructorId;
+
+	/**
+	 * 
+	 */
+	public CourseInstructor() {
+		// TODO Auto-generated constructor stub
+	}
 
 	public CourseInstructor(int courseId, int instructorId) {
 		this.courseId = courseId;
@@ -45,7 +52,5 @@ public class CourseInstructor implements Serializable {
 	public String toString() {
 		return "CourseInstructor [courseId=" + courseId + ", instructorId=" + instructorId + "]";
 	}
-	
-	
 
 }

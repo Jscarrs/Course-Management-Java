@@ -1,28 +1,35 @@
-package group1;
+package service;
 
 import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.FileWriter;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Scanner;
 
-//created instructor manager class to manage insertion and listing of instructor data and also manage save changes to file
-public class InstructorManager {
-	private static final String INSTRUCTOR_FILE = "./data/instructors.dat";
-	private static final String INSTRUCTOR_CSV = "./data/instructors.csv";
+import exceptions.InvalidCSVFormatException;
+import model.Instructor;
+
+public class InstructorService {
+	private static final String FILE_PATH = "./data/instructors.dat";
+	private static final String CSV_PATH = "./data/instructors.csv";
 
 	public static void addInstructor() {
 		BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
 		try {
 			System.out.print("Enter Instructor ID: ");
-			String instructorId = reader.readLine();
+			int instructorId = Integer.parseInt(reader.readLine());
+
+			if (isInstructorExists(instructorId)) {
+				System.out.println("Instructor ID already exists. Please enter a unique ID.");
+				return;
+			}
+
 			System.out.print("Enter Instructor Name: ");
 			String name = reader.readLine();
 			System.out.print("Enter Instructor Email: ");
@@ -31,17 +38,10 @@ public class InstructorManager {
 			String department = reader.readLine();
 
 			Instructor newInstructor = new Instructor(instructorId, name, email, department);
-
-			ArrayList<Instructor> instructors = readBinaryFile();
-			instructors.add(newInstructor);
-			writeBinaryFile(instructors);
-
-			// Append instructor to CSV file
-			appendToCSV(instructorId, name, email, department);
-
+			appendToBinaryFile(newInstructor);
 			System.out.println("Instructor added successfully!");
-		} catch (IOException e) {
-			System.out.println("Error reading input!");
+		} catch (IOException | NumberFormatException e) {
+			System.out.println("Error reading input! Ensure correct format.");
 		}
 	}
 
@@ -49,14 +49,14 @@ public class InstructorManager {
 		Scanner scanner = new Scanner(System.in);
 
 		System.out.print("Enter Instructor ID to update: ");
-		String id = scanner.nextLine();
+		int id = scanner.nextInt();
+		scanner.nextLine();
 
-		// Load existing instructors from the binary file
 		ArrayList<Instructor> instructors = readBinaryFile();
 		boolean found = false;
 
 		for (Instructor instructor : instructors) {
-			if (instructor.getInstructorId().equals(id)) {
+			if (instructor.getInstructorId() == id) {
 				System.out.print("Enter new Instructor Name: ");
 				String name = scanner.nextLine();
 				System.out.print("Enter new Instructor Email: ");
@@ -73,13 +73,11 @@ public class InstructorManager {
 		}
 
 		if (found) {
-			// Save updated instructor list back to binary file
 			writeBinaryFile(instructors);
 			System.out.println("Instructor updated successfully!");
 		} else {
 			System.out.println("Instructor with ID " + id + " not found.");
 		}
-//        scanner.close();
 	}
 
 	public static void listInstructors() {
@@ -102,7 +100,7 @@ public class InstructorManager {
 	@SuppressWarnings("unchecked")
 	private static ArrayList<Instructor> readBinaryFile() {
 		ArrayList<Instructor> list = new ArrayList<>();
-		try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(INSTRUCTOR_FILE))) {
+		try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(FILE_PATH))) {
 			list = (ArrayList<Instructor>) ois.readObject();
 		} catch (IOException | ClassNotFoundException e) {
 			System.out.println("No existing instructor records found.");
@@ -111,37 +109,40 @@ public class InstructorManager {
 	}
 
 	private static void writeBinaryFile(ArrayList<Instructor> list) {
-		try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(INSTRUCTOR_FILE))) {
+		try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(FILE_PATH))) {
 			oos.writeObject(list);
 		} catch (IOException e) {
 			System.out.println("Error saving instructor data!");
 		}
 	}
 
-	// Append new instructor to CSV file
-	private static void appendToCSV(String instructorId, String name, String email, String department) {
-		try (FileWriter fw = new FileWriter(INSTRUCTOR_CSV, true);
-				BufferedWriter bw = new BufferedWriter(fw);
-				PrintWriter out = new PrintWriter(bw)) {
-			out.println(); // Ensure newline before adding new record
-			out.println(instructorId + "," + name + "," + email + "," + department); // Write new record
-		} catch (IOException e) {
-			System.out.println("Error appending instructor to CSV!");
+	private static void appendToBinaryFile(Instructor instructor) {
+		ArrayList<Instructor> instructors = readBinaryFile();
+		instructors.add(instructor);
+		writeBinaryFile(instructors);
+	}
+
+	private static boolean isInstructorExists(int instructorId) {
+		ArrayList<Instructor> instructors = readBinaryFile();
+		for (Instructor instructor : instructors) {
+			if (instructor.getInstructorId() == instructorId) {
+				return true;
+			}
 		}
+		return false;
 	}
 
 	public static void deleteInstructor() {
 		Scanner scanner = new Scanner(System.in);
 		System.out.print("Enter Instructor ID: ");
 		int instructorId = scanner.nextInt();
-	    scanner.nextLine();
+		scanner.nextLine();
 
 		ArrayList<Instructor> instructors = readBinaryFile();
 		boolean found = false;
 
-		// Check if the instructor exists
 		for (Instructor instructor : instructors) {
-			if (instructor.getInstructorId().equals(String.valueOf(instructorId))) {
+			if (instructor.getInstructorId() == instructorId) {
 				found = true;
 				break;
 			}
@@ -152,9 +153,7 @@ public class InstructorManager {
 			return;
 		}
 
-		// Check if the instructor is assigned to any courses
-		boolean hasCourses = CourseAssignManager.checkIntructorHasCourse(instructorId);
-
+		boolean hasCourses = CourseAssignService.checkIntructorHasCourse(instructorId);
 		if (hasCourses) {
 			System.out.print(
 					"This instructor is assigned to courses. Do you want to delete those assignments as well? (yes/no): ");
@@ -164,14 +163,11 @@ public class InstructorManager {
 				System.out.println("Deletion canceled.");
 				return;
 			}
-			// Delete related course assignments before removing the instructor
-			CourseAssignManager.deleteAllCourseFromInstructor(instructorId);
+
+			CourseAssignService.deleteAllAssignmentsByInstructor(instructorId);
 		}
 
-		// Remove the instructor from the list
-		instructors.removeIf(instructor -> instructor.getInstructorId().equals(String.valueOf(instructorId)));
-
-		// Save updated list to binary file
+		instructors.removeIf(instructor -> instructor.getInstructorId() == instructorId);
 		writeBinaryFile(instructors);
 		System.out.println("Instructor deleted successfully.");
 	}
@@ -179,12 +175,12 @@ public class InstructorManager {
 	public static void searchInstructorById() {
 		Scanner scanner = new Scanner(System.in);
 		System.out.print("Enter Instructor ID: ");
-		String instructorId = scanner.nextLine();
+		int instructorId = scanner.nextInt();
 
 		ArrayList<Instructor> instructors = readBinaryFile();
 
 		for (Instructor instructor : instructors) {
-			if (instructor.getInstructorId().equals(instructorId)) {
+			if (instructor.getInstructorId() == instructorId) {
 				System.out.println("\nInstructor Found:");
 				System.out.println("Instructor ID: " + instructor.getInstructorId());
 				System.out.println("Name: " + instructor.getName());
@@ -194,5 +190,52 @@ public class InstructorManager {
 			}
 		}
 		System.out.println("Instructor with ID " + instructorId + " not found.");
+	}
+
+	/**
+	 * CSV Parsing Functions
+	 */
+	public static ArrayList<Instructor> readInstructorsCSV() throws Exception {
+		ArrayList<Instructor> instructors = new ArrayList<>();
+
+		try (BufferedReader instructorBr = new BufferedReader(new FileReader(CSV_PATH))) {
+			instructorBr.readLine(); // Skip header
+
+			String line;
+			while ((line = instructorBr.readLine()) != null) {
+				instructors.add(parseInstructor(line));
+			}
+		} catch (InvalidCSVFormatException e) {
+			throw e;
+		} catch (FileNotFoundException e) {
+			throw new FileNotFoundException("File does not exist! (instructors.csv)");
+		} catch (IOException e) {
+			throw new FileNotFoundException("Unable to read file! (instructors.csv)");
+		}
+		return instructors;
+	}
+
+	private static Instructor parseInstructor(String line) throws InvalidCSVFormatException {
+		String[] data = line.split(",");
+
+		if (data.length != 4) {
+			throw new InvalidCSVFormatException("Instructor data must have 4 fields!");
+		}
+
+		if (data[0] == null || data[0].trim().isEmpty())
+			throw new InvalidCSVFormatException("Instructor ID is empty!");
+		else if (data[1] == null || data[1].trim().isEmpty())
+			throw new InvalidCSVFormatException("Instructor name is empty!");
+		else if (data[2] == null || data[2].trim().isEmpty())
+			throw new InvalidCSVFormatException("Instructor email is empty!");
+		else if (data[3] == null || data[3].trim().isEmpty())
+			throw new InvalidCSVFormatException("Instructor department is empty!");
+
+		try {
+			int instructorId = Integer.parseInt(data[0]);
+			return new Instructor(instructorId, data[1], data[2], data[3]);
+		} catch (NumberFormatException e) {
+			throw new InvalidCSVFormatException("Instructor ID must be a valid integer!");
+		}
 	}
 }
