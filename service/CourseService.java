@@ -10,6 +10,7 @@ import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.Scanner;
 
+import exceptions.DataNotFoundException;
 import model.Course;
 
 public class CourseService {
@@ -89,7 +90,7 @@ public class CourseService {
 	}
 
 	@SuppressWarnings("unchecked")
-	private static ArrayList<Course> readBinaryFile() {
+	public static ArrayList<Course> readBinaryFile() {
 		ArrayList<Course> list = new ArrayList<>();
 		try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(FILE_PATH))) {
 			list = (ArrayList<Course>) ois.readObject();
@@ -123,10 +124,7 @@ public class CourseService {
 		return false;
 	}
 
-	public static void searchCourseById() {
-		Scanner scanner = new Scanner(System.in);
-		System.out.print("Enter Course ID: ");
-		int courseId = scanner.nextInt();
+	public static Course searchCourseById(int courseId) throws DataNotFoundException {
 
 		ArrayList<Course> courses = readBinaryFile();
 
@@ -136,10 +134,11 @@ public class CourseService {
 				System.out.println("Course ID: " + course.getCourseId());
 				System.out.println("Course Name: " + course.getCourseName());
 				System.out.println("Credits: " + course.getCredits());
-				return;
+				return course;
 			}
 		}
-		System.out.println("Course with ID " + courseId + " not found.");
+
+		throw new DataNotFoundException("Course with ID " + courseId + " not found.");
 	}
 
 	public static void deleteCourse() {
