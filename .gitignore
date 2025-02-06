@@ -4,3 +4,8 @@
 /InvalidCSVFormatException.class
 /Person.class
 /Student.class
+.classpath
+.DS_Store
+data/.DS_Store
+data/courses.dat
+data/instructors.dat
