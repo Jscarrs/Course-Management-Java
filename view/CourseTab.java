@@ -173,7 +173,6 @@ public class CourseTab {
 				course.setCourseName(newName);
 			} else if (event.getTableColumn().getText().equals("Credits")) {
 				try {
-					System.out.println("Yu ch gesen orood irlee");
 					String newCreditStr = event.getNewValue().toString().trim();
 					int newCredits = Integer.parseInt(newCreditStr);
 					if (newCredits <= 0) {
