@@ -59,6 +59,16 @@ public class AddCourseForm {
 			String courseName = courseNameField.getText();
 			int credits = Integer.parseInt(courseCreditsField.getText());
 
+			if (courseId <= 0) {
+				AlertDialog.showWarning("Invalid Input", "Course Id cannot be less than 1 or empty.");
+				return;
+			}
+			
+			if (credits <= 0) {
+				AlertDialog.showWarning("Invalid Input", "Credits cannot be less than 1 or empty.");
+				return;
+			}
+			
 			if (courseName.isEmpty()) {
 				AlertDialog.showWarning("Invalid Input", "Course Name cannot be empty.");
 				return;
