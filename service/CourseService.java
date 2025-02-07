@@ -1,65 +1,44 @@
 package service;
 
-import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
-import java.util.Scanner;
+import java.util.List;
 
+import exceptions.CRUDFailedException;
 import exceptions.DataNotFoundException;
 import model.Course;
+import view.AlertDialog;
 
 public class CourseService {
 	private static final String FILE_PATH = "./data/courses.dat";
 
-	public static void addCourse() {
-		BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
+	public static boolean addCourse(Course course) throws CRUDFailedException, DataNotFoundException {
 		try {
-			System.out.print("Enter Course ID: ");
-			int courseId = Integer.parseInt(reader.readLine());
-
-			if (isCourseExists(courseId)) {
-				System.out.println("Course ID already exists. Please enter a unique ID.");
-				return;
+			if (isCourseExists(course.getCourseId())) {
+				throw new CRUDFailedException("Course ID already exists. Please enter a unique ID.");
 			}
 
-			System.out.print("Enter Course Name: ");
-			String courseName = reader.readLine();
-			System.out.print("Enter Credits: ");
-			int credits = Integer.parseInt(reader.readLine());
-
-			Course newCourse = new Course(courseId, courseName, credits);
+			Course newCourse = course;
 			appendToBinaryFile(newCourse);
 
-			System.out.println("Course added successfully!");
-		} catch (IOException | NumberFormatException e) {
-			System.out.println("Error reading input! Ensure correct format.");
+			return true;
+		} catch (NumberFormatException e) {
+			throw new CRUDFailedException("Error reading input! Ensure correct format.");
 		}
 	}
 
-	public static void updateCourse() {
-		Scanner scanner = new Scanner(System.in);
-
-		System.out.print("Enter Course ID to update: ");
-		int id = scanner.nextInt();
-		scanner.nextLine();
-
+	public static boolean updateCourse(Course newCourse) throws CRUDFailedException, DataNotFoundException {
 		ArrayList<Course> courses = readBinaryFile();
 		boolean found = false;
 
 		for (Course course : courses) {
-			if (course.getCourseId() == id) {
-				System.out.print("Enter new Course Name: ");
-				String name = scanner.nextLine();
-				System.out.print("Enter new Credits: ");
-				int credits = Integer.parseInt(scanner.nextLine());
-
-				course.setCourseName(name);
-				course.setCredits(credits);
+			if (course.getCourseId() == newCourse.getCourseId()) {
+				course.setCourseName(newCourse.getCourseName());
+				course.setCredits(newCourse.getCredits());
 				found = true;
 				break;
 			}
@@ -67,54 +46,48 @@ public class CourseService {
 
 		if (found) {
 			writeBinaryFile(courses);
-			System.out.println("Course updated successfully!");
+			return true;
 		} else {
-			System.out.println("Course with ID " + id + " not found.");
+			throw new CRUDFailedException("Course with ID " + newCourse.getCourseId() + " not found.");
 		}
 	}
 
-	public static void listCourses() {
+	public static List<Course> listCourses() throws DataNotFoundException {
 		ArrayList<Course> courses = readBinaryFile();
 		if (courses.isEmpty()) {
-			System.out.println("No courses found.");
-			return;
+			throw new DataNotFoundException("No courses found.");
 		}
-
-		System.out.println("\nList of Courses:");
-		for (Course course : courses) {
-			System.out.println("Course ID: " + course.getCourseId());
-			System.out.println("Course Name: " + course.getCourseName());
-			System.out.println("Credits: " + course.getCredits());
-			System.out.println("----------------------------");
-		}
+		return courses;
 	}
 
 	@SuppressWarnings("unchecked")
-	public static ArrayList<Course> readBinaryFile() {
+	private static ArrayList<Course> readBinaryFile() throws DataNotFoundException {
 		ArrayList<Course> list = new ArrayList<>();
 		try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(FILE_PATH))) {
 			list = (ArrayList<Course>) ois.readObject();
 		} catch (IOException | ClassNotFoundException e) {
-			System.out.println("No existing course records found.");
+			throw new DataNotFoundException("No existing course records found.");
 		}
 		return list;
 	}
 
-	private static void writeBinaryFile(ArrayList<Course> list) {
+	private static void writeBinaryFile(ArrayList<Course> list) throws CRUDFailedException {
 		try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(FILE_PATH))) {
 			oos.writeObject(list);
 		} catch (IOException e) {
-			System.out.println("Error saving course data!");
+			throw new CRUDFailedException("Error saving course data!");
 		}
 	}
 
-	private static void appendToBinaryFile(Course course) {
+	private static void appendToBinaryFile(Course course) throws DataNotFoundException, CRUDFailedException {
 		ArrayList<Course> courses = readBinaryFile();
 		courses.add(course);
 		writeBinaryFile(courses);
 	}
 
-	private static boolean isCourseExists(int courseId) {
+	private static boolean isCourseExists(int courseId) throws DataNotFoundException {
+		if (courseId < 1)
+			return true;
 		ArrayList<Course> courses = readBinaryFile();
 		for (Course course : courses) {
 			if (course.getCourseId() == courseId) {
@@ -130,10 +103,6 @@ public class CourseService {
 
 		for (Course course : courses) {
 			if (course.getCourseId() == courseId) {
-				System.out.println("\nCourse Found:");
-				System.out.println("Course ID: " + course.getCourseId());
-				System.out.println("Course Name: " + course.getCourseName());
-				System.out.println("Credits: " + course.getCredits());
 				return course;
 			}
 		}
@@ -141,13 +110,11 @@ public class CourseService {
 		throw new DataNotFoundException("Course with ID " + courseId + " not found.");
 	}
 
-	public static void deleteCourse() {
-		Scanner scanner = new Scanner(System.in);
-		System.out.print("Enter Course ID: ");
-		int courseId = scanner.nextInt();
-		scanner.nextLine();
+	// Check before delete
+	public static boolean checkCourseHasRelation(int courseId) throws DataNotFoundException {
 
 		ArrayList<Course> courses = readBinaryFile();
+
 		boolean found = false;
 
 		for (Course course : courses) {
@@ -159,28 +126,25 @@ public class CourseService {
 
 		if (!found) {
 			System.out.println("Course with ID " + courseId + " not found.");
-			return;
+			throw new DataNotFoundException("Course with ID " + courseId + " not found.");			
 		}
 
 		boolean hasStudents = CourseAssignService.checkStudentAssignedToCourse(courseId);
 		boolean hasInstructor = CourseAssignService.checkIntructorAssignedToCourse(courseId);
 
-		if (hasStudents || hasInstructor) {
-			System.out.print(
-					"This course has assigned students/instructors. Do you want to delete them as well? (yes/no): ");
-			String input = scanner.nextLine().trim().toLowerCase();
+		return hasStudents && hasInstructor;
+	}
 
-			if (!input.equals("yes")) {
-				System.out.println("Deletion canceled.");
-				return;
-			}
+	public static boolean deleteCourse(int courseId) throws DataNotFoundException, CRUDFailedException {
 
-			CourseAssignService.deleteAllStudentFromCourse(courseId);
-			CourseAssignService.deleteAllInstructorFromCourse(courseId);
-		}
+		ArrayList<Course> courses = readBinaryFile();
 
+		// Deleting all relations
+		CourseAssignService.deleteAllStudentFromCourse(courseId);
+		CourseAssignService.deleteAllInstructorFromCourse(courseId);
+		// Deleting main record
 		courses.removeIf(course -> course.getCourseId() == courseId);
 		writeBinaryFile(courses);
-		System.out.println("Course deleted successfully.");
+		return true;
 	}
 }

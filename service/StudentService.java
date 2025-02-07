@@ -9,6 +9,9 @@ import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.Scanner;
 
+import exceptions.CRUDFailedException;
+import exceptions.DataNotFoundException;
+import model.Instructor;
 import model.Student;
 
 public class StudentService {
@@ -85,11 +88,8 @@ public class StudentService {
 		}
 	}
 
-	public static void deleteStudent() {
-		Scanner scanner = new Scanner(System.in);
-		System.out.print("Enter Student ID: ");
-		int studentId = scanner.nextInt();
-		scanner.nextLine();
+	// Check before delete
+	public static boolean checkStudentHasRelation(int studentId) throws DataNotFoundException {
 
 		ArrayList<Student> students = readStudents();
 		boolean found = false;
@@ -103,23 +103,19 @@ public class StudentService {
 
 		if (!found) {
 			System.out.println("Student with ID " + studentId + " not found.");
-			return;
+			throw new DataNotFoundException("Student with ID " + studentId + " not found.");
 		}
 
-		boolean hasCourses = CourseAssignService.checkStudentHasCourse(studentId);
-		if (hasCourses) {
-			System.out.print(
-					"This student is enrolled in courses. Do you want to delete those enrollments as well? (yes/no): ");
-			String input = scanner.nextLine().trim().toLowerCase();
+		return CourseAssignService.checkStudentHasCourse(studentId);
 
-			if (!input.equals("yes")) {
-				System.out.println("Deletion canceled.");
-				return;
-			}
+	}
 
-			CourseAssignService.deleteAllCourseFromStudent(studentId);
-		}
+	public static void deleteStudent(int studentId) throws DataNotFoundException, CRUDFailedException {
+		ArrayList<Student> students = readStudents();
+		// Delete relations
+		CourseAssignService.deleteAllCourseFromStudent(studentId);
 
+		// Delete record
 		students.removeIf(student -> student.getStudentId() == studentId);
 		saveStudents(students);
 		System.out.println("Student deleted successfully.");
@@ -145,6 +141,8 @@ public class StudentService {
 	}
 
 	private static boolean isStudentExists(int studentId) {
+		if (studentId < 1)
+			return true;
 		ArrayList<Student> students = readStudents();
 		for (Student student : students) {
 			if (student.getStudentId() == studentId) {
@@ -155,7 +153,7 @@ public class StudentService {
 	}
 
 	@SuppressWarnings("unchecked")
-	public static ArrayList<Student> readStudents() {
+	private static ArrayList<Student> readStudents() {
 		ArrayList<Student> students = new ArrayList<>();
 		try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(FILE_PATH))) {
 			students = (ArrayList<Student>) ois.readObject();
@@ -167,7 +165,7 @@ public class StudentService {
 		return students;
 	}
 
-	public static void saveStudents(ArrayList<Student> students) {
+	private static void saveStudents(ArrayList<Student> students) {
 		try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(FILE_PATH))) {
 			oos.writeObject(students);
 		} catch (IOException e) {

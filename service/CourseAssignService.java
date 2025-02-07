@@ -78,7 +78,7 @@ public class CourseAssignService implements Serializable {
 	 * One course only can have one instructor, but instructor can have multiple
 	 * courses
 	 */
-	public static boolean isIntructorAssignedToCourse(int pcourseId) {
+	private static boolean isIntructorAssignedToCourse(int pcourseId) {
 		try (RandomAccessFile file = new RandomAccessFile(filePathInstructor, "r")) {
 			while (file.getFilePointer() < file.length()) {
 				int courseId = file.readInt();
@@ -95,7 +95,11 @@ public class CourseAssignService implements Serializable {
 	}
 
 	// Used in delete functions
-	public static boolean checkIntructorAssignedToCourse(int pcourseId) {
+	protected static boolean checkIntructorAssignedToCourse(int pcourseId) {
+
+		if (!isDeletePathExist(filePathInstructor))
+			return false;
+
 		try (RandomAccessFile file = new RandomAccessFile(filePathInstructor, "r")) {
 			while (file.getFilePointer() < file.length()) {
 				int courseId = file.readInt();
@@ -111,7 +115,11 @@ public class CourseAssignService implements Serializable {
 	}
 
 	// Used in delete functions
-	public static boolean checkIntructorHasCourse(int pinstructorId) {
+	protected static boolean checkIntructorHasCourse(int pinstructorId) {
+
+		if (!isDeletePathExist(filePathInstructor))
+			return false;
+
 		try (RandomAccessFile file = new RandomAccessFile(filePathInstructor, "r")) {
 			while (file.getFilePointer() < file.length()) {
 				file.readInt(); // skipping
@@ -127,7 +135,11 @@ public class CourseAssignService implements Serializable {
 	}
 
 	// Used in delete functions
-	public static boolean checkStudentAssignedToCourse(int pcourse) {
+	protected static boolean checkStudentAssignedToCourse(int pcourse) {
+
+		if (!isDeletePathExist(filePathInstructor))
+			return false;
+
 		try (RandomAccessFile file = new RandomAccessFile(filePathStudents, "r")) {
 			while (file.getFilePointer() < file.length()) {
 				int courseId = file.readInt();
@@ -143,7 +155,11 @@ public class CourseAssignService implements Serializable {
 	}
 
 	// Used in delete functions
-	public static boolean checkStudentHasCourse(int pstudentId) {
+	protected static boolean checkStudentHasCourse(int pstudentId) {
+
+		if (!isDeletePathExist(filePathInstructor))
+			return false;
+
 		try (RandomAccessFile file = new RandomAccessFile(filePathStudents, "r")) {
 			while (file.getFilePointer() < file.length()) {
 				file.readInt(); // skipping
@@ -162,7 +178,7 @@ public class CourseAssignService implements Serializable {
 	 * Course and Student has many to many relation but we need to avoid duplicate
 	 * records
 	 */
-	public static boolean isStudentCourseAssigned(int pcourseId, int pstudentId) {
+	private static boolean isStudentCourseAssigned(int pcourseId, int pstudentId) {
 		try (RandomAccessFile file = new RandomAccessFile(filePathInstructor, "r")) {
 			while (file.getFilePointer() < file.length()) {
 				int courseId = file.readInt();
@@ -178,7 +194,7 @@ public class CourseAssignService implements Serializable {
 		return false;
 	}
 
-	public static List<CourseInstructor> getAllInstructorAssignments() {
+	private static List<CourseInstructor> getAllInstructorAssignments() {
 		isFileExists(filePathInstructor);
 		List<CourseInstructor> assignments = new ArrayList<>();
 		try (RandomAccessFile file = new RandomAccessFile(filePathInstructor, "r")) {
@@ -193,7 +209,7 @@ public class CourseAssignService implements Serializable {
 		return assignments;
 	}
 
-	public static List<CourseStudents> getAllStudentAssignments() {
+	private static List<CourseStudents> getAllStudentAssignments() {
 		isFileExists(filePathStudents);
 		List<CourseStudents> students = new ArrayList<>();
 		try (RandomAccessFile file = new RandomAccessFile(filePathStudents, "r")) {
@@ -234,202 +250,206 @@ public class CourseAssignService implements Serializable {
 
 //	DELETE FUNCTIONS:
 
-	public static void checkPathDelete(boolean isCourse) {
-		String strRel = isCourse ? "course - student" : "course - instructor";
-		if (!new File(filePathStudents).exists()) {
-			System.out.println("No records found in " + strRel + " assignments.");
-			return;
-		}
+	private static boolean isDeletePathExist(String filePath) {
+		if (new File(filePath).exists())
+			return true;
+		else
+			return false;
 	}
 
 	// Delete specific course - student relation
-	public static void deleteCourseStudent() {
-		checkPathDelete(true);
+	private static void deleteCourseStudent() {
+		if (isDeletePathExist(filePathStudents)) {
+			System.out.print("Enter course id: ");
+			int pcourseId = scanner.nextInt();
+			System.out.print("Enter student id: ");
+			int pstudentId = scanner.nextInt();
 
-		System.out.print("Enter course id: ");
-		int pcourseId = scanner.nextInt();
-		System.out.print("Enter student id: ");
-		int pstudentId = scanner.nextInt();
+			List<CourseStudents> keepingList = new ArrayList<>();
+			boolean isDeletedRec = false;
 
-		List<CourseStudents> keepingList = new ArrayList<>();
-		boolean isDeletedRec = false;
-
-		try (RandomAccessFile file = new RandomAccessFile(filePathStudents, "r")) {
-			while (file.getFilePointer() < file.length()) {
-				int courseId = file.readInt();
-				int studentId = file.readInt();
-				if (courseId == pcourseId && studentId == pstudentId) {
-					isDeletedRec = true;
-				} else {
-					keepingList.add(new CourseStudents(courseId, studentId));
+			try (RandomAccessFile file = new RandomAccessFile(filePathStudents, "r")) {
+				while (file.getFilePointer() < file.length()) {
+					int courseId = file.readInt();
+					int studentId = file.readInt();
+					if (courseId == pcourseId && studentId == pstudentId) {
+						isDeletedRec = true;
+					} else {
+						keepingList.add(new CourseStudents(courseId, studentId));
+					}
 				}
+			} catch (IOException e) {
+				e.printStackTrace();
 			}
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
 
-		if (!isDeletedRec) {
-			System.out.println("No matching record found to delete.");
-			return;
+			if (!isDeletedRec) {
+				System.out.println("No matching record found to delete.");
+				return;
+			}
+			overrideCourseStudentFile(keepingList);
 		}
-		overrideCourseStudentFile(keepingList);
 	}
 
 	// Delete all courses from student
 	// Used in delete
-	public static void deleteAllCourseFromStudent(int pstudentId) {
-		checkPathDelete(true);
+	protected static void deleteAllCourseFromStudent(int pstudentId) {
+		if (isDeletePathExist(filePathStudents)) {
 
-		List<CourseStudents> keepingList = new ArrayList<>();
-		boolean isDeletedRec = false;
+			List<CourseStudents> keepingList = new ArrayList<>();
+			boolean isDeletedRec = false;
 
-		try (RandomAccessFile file = new RandomAccessFile(filePathStudents, "r")) {
-			while (file.getFilePointer() < file.length()) {
-				int courseId = file.readInt();
-				int studentId = file.readInt();
-				if (studentId == pstudentId) {
-					isDeletedRec = true;
-				} else {
-					keepingList.add(new CourseStudents(courseId, studentId));
+			try (RandomAccessFile file = new RandomAccessFile(filePathStudents, "r")) {
+				while (file.getFilePointer() < file.length()) {
+					int courseId = file.readInt();
+					int studentId = file.readInt();
+					if (studentId == pstudentId) {
+						isDeletedRec = true;
+					} else {
+						keepingList.add(new CourseStudents(courseId, studentId));
+					}
 				}
+			} catch (IOException e) {
+				e.printStackTrace();
 			}
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
 
-		if (!isDeletedRec) {
-			System.out.println("Course - No matching records found to delete.");
-			return;
-		}
+			if (!isDeletedRec) {
+				System.out.println("Course - No matching records found to delete.");
+				return;
+			}
 
-		overrideCourseStudentFile(keepingList);
+			overrideCourseStudentFile(keepingList);
+		}
 	}
 
 	// Delete all students from given course
 	// Used in Delete function
-	public static void deleteAllStudentFromCourse(int pcourseId) {
-		checkPathDelete(true);
+	protected static void deleteAllStudentFromCourse(int pcourseId) {
+		if (isDeletePathExist(filePathStudents)) {
 
-		List<CourseStudents> keepingList = new ArrayList<>();
-		boolean isDeletedRec = false;
+			List<CourseStudents> keepingList = new ArrayList<>();
+			boolean isDeletedRec = false;
 
-		try (RandomAccessFile file = new RandomAccessFile(filePathStudents, "r")) {
-			while (file.getFilePointer() < file.length()) {
-				int courseId = file.readInt();
-				int studentId = file.readInt();
-				if (courseId == pcourseId) {
-					isDeletedRec = true;
-				} else {
-					keepingList.add(new CourseStudents(courseId, studentId));
+			try (RandomAccessFile file = new RandomAccessFile(filePathStudents, "r")) {
+				while (file.getFilePointer() < file.length()) {
+					int courseId = file.readInt();
+					int studentId = file.readInt();
+					if (courseId == pcourseId) {
+						isDeletedRec = true;
+					} else {
+						keepingList.add(new CourseStudents(courseId, studentId));
+					}
 				}
+			} catch (IOException e) {
+				e.printStackTrace();
 			}
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
 
-		if (!isDeletedRec) {
-			System.out.println("No matching student records found to delete.");
-			return;
-		}
+			if (!isDeletedRec) {
+				System.out.println("No matching student records found to delete.");
+				return;
+			}
 
-		overrideCourseStudentFile(keepingList);
+			overrideCourseStudentFile(keepingList);
+		}
 	}
 
 	// Delete specific course - instructor relation
-	public static void deleteCourseInstructor() {
-		checkPathDelete(false);
+	private static void deleteCourseInstructor() {
+		if (isDeletePathExist(filePathInstructor)) {
 
-		System.out.print("Enter course id: ");
-		int pcourseId = scanner.nextInt();
-		System.out.print("Enter instructor id: ");
-		int pintructorId = scanner.nextInt();
+			System.out.print("Enter course id: ");
+			int pcourseId = scanner.nextInt();
+			System.out.print("Enter instructor id: ");
+			int pintructorId = scanner.nextInt();
 
-		List<CourseInstructor> keepingList = new ArrayList<>();
-		boolean isDeletedRec = false;
+			List<CourseInstructor> keepingList = new ArrayList<>();
+			boolean isDeletedRec = false;
 
-		try (RandomAccessFile file = new RandomAccessFile(filePathInstructor, "r")) {
-			while (file.getFilePointer() < file.length()) {
-				int courseId = file.readInt();
-				int instructorId = file.readInt();
-				if (courseId == pcourseId && instructorId == pintructorId) {
-					isDeletedRec = true;
-				} else {
-					keepingList.add(new CourseInstructor(courseId, instructorId));
+			try (RandomAccessFile file = new RandomAccessFile(filePathInstructor, "r")) {
+				while (file.getFilePointer() < file.length()) {
+					int courseId = file.readInt();
+					int instructorId = file.readInt();
+					if (courseId == pcourseId && instructorId == pintructorId) {
+						isDeletedRec = true;
+					} else {
+						keepingList.add(new CourseInstructor(courseId, instructorId));
+					}
 				}
+			} catch (IOException e) {
+				e.printStackTrace();
 			}
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
 
-		if (!isDeletedRec) {
-			System.out.println("No matching record found to delete.");
-			return;
-		}
+			if (!isDeletedRec) {
+				System.out.println("No matching record found to delete.");
+				return;
+			}
 
-		overrideCourseInstructorFile(keepingList);
+			overrideCourseInstructorFile(keepingList);
+		}
 	}
 
 	// Delete all assigned Courses from Instructor
 	// Used in delete function
-	public static void deleteAllCourseFromInstructor(int pinstructorId) {
-		checkPathDelete(false);
+	protected static void deleteAllCourseFromInstructor(int pinstructorId) {
+		if (isDeletePathExist(filePathInstructor)) {
 
-		List<CourseInstructor> keepingList = new ArrayList<>();
-		boolean isDeletedRec = false;
+			List<CourseInstructor> keepingList = new ArrayList<>();
+			boolean isDeletedRec = false;
 
-		try (RandomAccessFile file = new RandomAccessFile(filePathInstructor, "r")) {
-			while (file.getFilePointer() < file.length()) {
-				int courseId = file.readInt();
-				int instructorId = file.readInt();
-				if (instructorId == pinstructorId) {
-					isDeletedRec = true;
-				} else {
-					keepingList.add(new CourseInstructor(courseId, instructorId));
+			try (RandomAccessFile file = new RandomAccessFile(filePathInstructor, "r")) {
+				while (file.getFilePointer() < file.length()) {
+					int courseId = file.readInt();
+					int instructorId = file.readInt();
+					if (instructorId == pinstructorId) {
+						isDeletedRec = true;
+					} else {
+						keepingList.add(new CourseInstructor(courseId, instructorId));
+					}
 				}
+			} catch (IOException e) {
+				e.printStackTrace();
 			}
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
 
-		if (!isDeletedRec) {
-			System.out.println("No matching records found to delete.");
-			return;
-		}
+			if (!isDeletedRec) {
+				System.out.println("No matching records found to delete.");
+				return;
+			}
 
-		overrideCourseInstructorFile(keepingList);
+			overrideCourseInstructorFile(keepingList);
+		}
 	}
 
 	// Delete all assigned Instructors from Course
 	// Used in Delete function
-	public static void deleteAllInstructorFromCourse(int pcourseId) {
-		checkPathDelete(false);
+	protected static void deleteAllInstructorFromCourse(int pcourseId) {
+		if (isDeletePathExist(filePathInstructor)) {
 
-		List<CourseInstructor> keepingList = new ArrayList<>();
-		boolean isDeletedRec = false;
+			List<CourseInstructor> keepingList = new ArrayList<>();
+			boolean isDeletedRec = false;
 
-		try (RandomAccessFile file = new RandomAccessFile(filePathInstructor, "r")) {
-			while (file.getFilePointer() < file.length()) {
-				int courseId = file.readInt();
-				int instructorId = file.readInt();
-				if (courseId == pcourseId) {
-					isDeletedRec = true;
-				} else {
-					keepingList.add(new CourseInstructor(courseId, instructorId));
+			try (RandomAccessFile file = new RandomAccessFile(filePathInstructor, "r")) {
+				while (file.getFilePointer() < file.length()) {
+					int courseId = file.readInt();
+					int instructorId = file.readInt();
+					if (courseId == pcourseId) {
+						isDeletedRec = true;
+					} else {
+						keepingList.add(new CourseInstructor(courseId, instructorId));
+					}
 				}
+			} catch (IOException e) {
+				e.printStackTrace();
 			}
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
 
-		if (!isDeletedRec) {
-			System.out.println("Instructor - No matching records found to delete.");
-			return;
-		}
+			if (!isDeletedRec) {
+				System.out.println("Instructor - No matching records found to delete.");
+				return;
+			}
 
-		overrideCourseInstructorFile(keepingList);
+			overrideCourseInstructorFile(keepingList);
+		}
 	}
 
-	public static void overrideCourseStudentFile(List<CourseStudents> keepingList) {
+	private static void overrideCourseStudentFile(List<CourseStudents> keepingList) {
 		try (RandomAccessFile file = new RandomAccessFile(filePathStudents, "rw")) {
 			file.setLength(0);
 			for (CourseStudents record : keepingList) {
@@ -444,7 +464,7 @@ public class CourseAssignService implements Serializable {
 		}
 	}
 
-	public static void overrideCourseInstructorFile(List<CourseInstructor> keepingList) {
+	private static void overrideCourseInstructorFile(List<CourseInstructor> keepingList) {
 		try (RandomAccessFile file = new RandomAccessFile(filePathInstructor, "rw")) {
 			file.setLength(0);
 			for (CourseInstructor record : keepingList) {

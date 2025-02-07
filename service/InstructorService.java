@@ -10,6 +10,8 @@ import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.Scanner;
 
+import exceptions.CRUDFailedException;
+import exceptions.DataNotFoundException;
 import model.Instructor;
 
 public class InstructorService {
@@ -119,6 +121,8 @@ public class InstructorService {
 	}
 
 	private static boolean isInstructorExists(int instructorId) {
+		if (instructorId < 1)
+			return true;
 		ArrayList<Instructor> instructors = readBinaryFile();
 		for (Instructor instructor : instructors) {
 			if (instructor.getInstructorId() == instructorId) {
@@ -128,12 +132,8 @@ public class InstructorService {
 		return false;
 	}
 
-	public static void deleteInstructor() {
-		Scanner scanner = new Scanner(System.in);
-		System.out.print("Enter Instructor ID: ");
-		int instructorId = scanner.nextInt();
-		scanner.nextLine();
-
+	// Check before delete
+	public static boolean checkInstructorHasRelation(int instructorId) throws DataNotFoundException {
 		ArrayList<Instructor> instructors = readBinaryFile();
 		boolean found = false;
 
@@ -146,26 +146,23 @@ public class InstructorService {
 
 		if (!found) {
 			System.out.println("Instructor with ID " + instructorId + " not found.");
-			return;
+			throw new DataNotFoundException("Instructor with ID " + instructorId + " not found.");
 		}
 
-		boolean hasCourses = CourseAssignService.checkIntructorHasCourse(instructorId);
-		if (hasCourses) {
-			System.out.print(
-					"This instructor is assigned to courses. Do you want to delete those assignments as well? (yes/no): ");
-			String input = scanner.nextLine().trim().toLowerCase();
+		return CourseAssignService.checkIntructorHasCourse(instructorId);
 
-			if (!input.equals("yes")) {
-				System.out.println("Deletion canceled.");
-				return;
-			}
+	}
 
-			CourseAssignService.deleteAllCourseFromInstructor(instructorId);
-		}
+	public static boolean deleteInstructor(int instructorId) throws DataNotFoundException, CRUDFailedException {
+		ArrayList<Instructor> instructors = readBinaryFile();
 
+		// Delete relations
+		CourseAssignService.deleteAllCourseFromInstructor(instructorId);
+
+		// Delete record
 		instructors.removeIf(instructor -> instructor.getInstructorId() == instructorId);
 		writeBinaryFile(instructors);
-		System.out.println("Instructor deleted successfully.");
+		return true;
 	}
 
 	public static void searchInstructorById() {
