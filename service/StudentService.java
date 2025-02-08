@@ -114,10 +114,10 @@ public class StudentService {
 	public static boolean deleteStudent(int studentId) throws DataNotFoundException, CRUDFailedException, IOException {
 		ArrayList<Student> students = readBinaryFile();
 
-		// Deleting all relations
+
 		CourseAssignService.deleteAllCourseFromStudent(studentId);
 
-		// Deleting main record
+
 		students.removeIf(student -> student.getStudentId() == studentId);
 		writeBinaryFile(students);
 		return true;
