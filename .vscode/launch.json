@@ -1,0 +1,24 @@
+{
+    // 使用 IntelliSense 以得知可用的屬性。
+    // 暫留以檢視現有屬性的描述。
+    // 如需詳細資訊，請瀏覽: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        
+        {
+            "type": "java",
+            "name": "Main",
+            "request": "launch",
+            "mainClass": "Main",
+            "projectName": "Course-Management-Java",
+            "vmArgs": "--module-path lib --add-modules javafx.controls,javafx.fxml,javafx.graphics,javafx.base"
+        },
+        {
+            "type": "java",
+            "name": "Current File",
+            "request": "launch",
+            "vmArgs": "--module-path lib --add-modules javafx.controls,javafx.fxml,javafx.graphics,javafx.base",
+            "mainClass": "${file}"
+        }
+    ]
+}

@@ -7,41 +7,56 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 
 import exceptions.CRUDFailedException;
 import exceptions.DataNotFoundException;
+import model.Course;
 import model.Instructor;
 import model.Student;
 
 public class StudentService {
 	private static final String FILE_PATH = "./data/students.dat";
 
-	public static void addStudent() {
-		Scanner scanner = new Scanner(System.in);
+	// public static void addStudent() {
+	// 	Scanner scanner = new Scanner(System.in);
 
-		System.out.print("Enter Student ID: ");
-		int id = scanner.nextInt();
-		scanner.nextLine();
+	// 	System.out.print("Enter Student ID: ");
+	// 	int id = scanner.nextInt();
+	// 	scanner.nextLine();
 
-		if (isStudentExists(id)) {
-			System.out.println("Student ID already exists. Please enter a unique ID.");
-			return;
+	// 	if (isStudentExists(id)) {
+	// 		System.out.println("Student ID already exists. Please enter a unique ID.");
+	// 		return;
+	// 	}
+
+	// 	System.out.print("Enter Student Name: ");
+	// 	String name = scanner.nextLine();
+	// 	System.out.print("Enter Student Email: ");
+	// 	String email = scanner.nextLine();
+
+	// 	Student newStudent = new Student(id, name, email);
+	// 	ArrayList<Student> students = readStudents();
+	// 	students.add(newStudent);
+	// 	saveStudents(students);
+
+	// 	System.out.println("Student added successfully!");
+	// }
+	public static boolean addStudent(Student student) throws CRUDFailedException, DataNotFoundException {
+		try {
+			if (isStudentExists(student.getStudentId())) {
+				throw new CRUDFailedException("Course ID already exists. Please enter a unique ID.");
+			}
+
+			Student newStudent = student;
+			appendToBinaryFile(newStudent);
+
+			return true;
+		} catch (NumberFormatException e) {
+			throw new CRUDFailedException("Error reading input! Ensure correct format.");
 		}
-
-		System.out.print("Enter Student Name: ");
-		String name = scanner.nextLine();
-		System.out.print("Enter Student Email: ");
-		String email = scanner.nextLine();
-
-		Student newStudent = new Student(id, name, email);
-		ArrayList<Student> students = readStudents();
-		students.add(newStudent);
-		saveStudents(students);
-
-		System.out.println("Student added successfully!");
 	}
-
 	public static void updateStudent() {
 		Scanner scanner = new Scanner(System.in);
 
@@ -74,18 +89,12 @@ public class StudentService {
 		}
 	}
 
-	public static void listStudents() {
+	public static List<Student> listStudents() throws DataNotFoundException {
 		ArrayList<Student> students = readStudents();
 		if (students.isEmpty()) {
-			System.out.println("No students found.");
-		} else {
-			for (Student student : students) {
-				System.out.println("Student ID: " + student.getStudentId());
-				System.out.println("Name: " + student.getName());
-				System.out.println("Email: " + student.getEmail());
-				System.out.println("-------------------");
-			}
+			throw new DataNotFoundException("No students found.");
 		}
+		return students;
 	}
 
 	// Check before delete
@@ -121,23 +130,16 @@ public class StudentService {
 		System.out.println("Student deleted successfully.");
 	}
 
-	public static void searchStudentById() {
-		Scanner scanner = new Scanner(System.in);
-		System.out.print("Enter Student ID: ");
-		int studentId = scanner.nextInt();
-
+	public static Student searchStudentById(int studentId) throws DataNotFoundException {
 		ArrayList<Student> students = readStudents();
 
 		for (Student student : students) {
 			if (student.getStudentId() == studentId) {
-				System.out.println("\nStudent Found:");
-				System.out.println("Student ID: " + student.getStudentId());
-				System.out.println("Name: " + student.getName());
-				System.out.println("Email: " + student.getEmail());
-				return;
+				return student;
 			}
 		}
-		System.out.println("Student with ID " + studentId + " not found.");
+
+		throw new DataNotFoundException("Student with ID " + studentId + " not found.");
 	}
 
 	private static boolean isStudentExists(int studentId) {
@@ -172,5 +174,27 @@ public class StudentService {
 			e.printStackTrace();
 		}
 	}
+	@SuppressWarnings("unchecked")
+	private static ArrayList<Student> readBinaryFile() throws DataNotFoundException {
+		ArrayList<Student> list = new ArrayList<>();
+		try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(FILE_PATH))) {
+			list = (ArrayList<Student>) ois.readObject();
+		} catch (IOException | ClassNotFoundException e) {
+			throw new DataNotFoundException("No existing student records found.");
+		}
+		return list;
+	}
 
+	private static void writeBinaryFile(ArrayList<Student> list) throws CRUDFailedException {
+		try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(FILE_PATH))) {
+			oos.writeObject(list);
+		} catch (IOException e) {
+			throw new CRUDFailedException("Error saving student data!");
+		}
+	}
+	private static void appendToBinaryFile(Student student) throws DataNotFoundException, CRUDFailedException {
+		ArrayList<Student> students = readBinaryFile();
+		students.add(student);
+		writeBinaryFile(students);
+	}
 }
