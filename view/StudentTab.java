@@ -14,13 +14,13 @@ import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
 import javafx.util.converter.IntegerStringConverter;
-import model.Student; // 假設有 Student 模型
-import service.StudentService; // 與 CourseTab 相同結構
+import model.Student; 
+import service.StudentService; 
 import exceptions.DataNotFoundException;
 import exceptions.CRUDFailedException;
-/**
- * 
- */
+import java.io.IOException;
+import view.AddStudentForm;
+
 public class StudentTab {
 
 	public Tab getTab() {
@@ -32,9 +32,13 @@ public class StudentTab {
 
 	private VBox createStudentTabContent() {
 		VBox vbox = new VBox(10);
-
+		vbox.setPadding(new Insets(10));
 
 		GridPane searchPane = new GridPane();
+		searchPane.setHgap(10);
+		searchPane.setVgap(10);
+		searchPane.setPadding(new Insets(10));
+
 		Label searchLabel = new Label("Search Student by ID:");
 		TextField searchField = new TextField();
 		Button searchButton = new Button("Search");
@@ -47,7 +51,6 @@ public class StudentTab {
 		TableView<Student> studentTable = new TableView<>();
 		setupTableColumns(studentTable);
 		loadStudents(studentTable);
-
 
 		searchButton.setOnAction(e -> clickSearchButton(searchField, studentTable));
 		addNewStudentButton.setOnAction(e -> handleAddStudent(studentTable));
@@ -70,9 +73,6 @@ public class StudentTab {
 		emailCol.setOnEditCommit(event -> handleEditStudent(event, studentTable));
 		emailCol.setCellValueFactory(data -> new javafx.beans.property.SimpleStringProperty(data.getValue().getEmail()));
 
-		// 可再新增更多欄位 (Email、等)
-
-		// 動作欄位 (刪除)
 		TableColumn<Student, Void> actionCol = new TableColumn<>("Actions");
 		actionCol.setCellFactory(param -> new TableCell<>() {
 			private final Button deleteBtn = new Button("Delete");
@@ -96,18 +96,18 @@ public class StudentTab {
 	private void loadStudents(TableView<Student> studentTable) {
 		try {
 			ObservableList<Student> studentList = FXCollections.observableArrayList(
-					StudentService.listStudents() // 來自 [`StudentService.listStudents()`](service/StudentService.java)
+					StudentService.listStudents()
 			);
 			studentTable.setItems(studentList);
 		} catch (Exception e) {
-			// 錯誤處理略
+			// Error handling
 		}
 	}
 
 	private void clickSearchButton(TextField searchField, TableView<Student> studentTable) {
 		String input = searchField.getText();
 		if (input.isEmpty()) {
-			loadStudents(studentTable); // Reload all students
+			loadStudents(studentTable);
 			return;
 		}
 		try {
@@ -127,41 +127,55 @@ public class StudentTab {
 	}
 
 	private void handleAddStudent(TableView<Student> studentTable) {
-		// 與 AddCourseForm 類似，可彈出對話框或直接輸入
-		// 新增後重新載入表格:
-		// loadStudents(studentTable);
+		new AddStudentForm(studentTable);
 	}
 
 	private void handleEditStudent(TableColumn.CellEditEvent<Student, ?> event, TableView<Student> studentTable) {
 		Student s = event.getRowValue();
 		if ("Name".equals(event.getTableColumn().getText())) {
 			s.setName(event.getNewValue().toString());
-			// 更新後呼叫 [`StudentService.updateStudent()`](service/StudentService.java)
 		}
 		if ("Email".equals(event.getTableColumn().getText())) {
 			s.setEmail(event.getNewValue().toString());
 			try {
 				try {
-					StudentService.updateStudent(s); // Similar to [`CourseService.updateCourse`](service/CourseService.java)
+					StudentService.updateStudent(s);
 				} catch (DataNotFoundException e) {
-					// Handle the exception, e.g., show an alert dialog
 					AlertDialog.showWarning("Update Failed", e.getMessage());
 				}
 			} catch (CRUDFailedException e) {
-				// 錯誤處理略
+				// Error handling
 			}
 		}
-		// 更新表格
 	}
 
 	private void handleDeleteStudent(Student s, TableView<Student> studentTable) {
-		if (s == null) return;
-		try {
-			StudentService.deleteStudent(s.getStudentId()); // [`StudentService.deleteStudent()`](service/StudentService.java)
-			loadStudents(studentTable);
-		} catch (Exception e) {
-			// 錯誤處理略
+		if (s == null) {
+			AlertDialog.showWarning("No Selection", "Please select a student to delete.");
+			return;
+		}
+
+		boolean isConfirmed = AlertDialog.showConfirm("Confirm Delete", "Are you sure you want to delete the student: "
+				+ s.getStudentId() + " - " + s.getName() + "?");
+
+		if (isConfirmed) {
+			try {
+				try {
+					boolean isSuccess = StudentService.deleteStudent(s.getStudentId());
+					if (isSuccess) {
+						AlertDialog.showSuccess("Success", "Successfully deleted student: " + s.getStudentId());
+						loadStudents(studentTable);
+					}
+				} catch (IOException e) {
+					AlertDialog.showWarning("Error", "Failed to delete student due to an IO error.");
+				}
+			} catch (DataNotFoundException e) {
+				AlertDialog.showWarning("Result not found", e.getMessage());
+			} catch (CRUDFailedException e) {
+				AlertDialog.showWarning("Error", e.getMessage());
+			}
+		} else {
+			AlertDialog.showWarning("Delete", "Deletion canceled");
 		}
 	}
-
 }
