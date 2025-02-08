@@ -111,7 +111,7 @@ public class CourseService {
 	}
 
 	// Check before delete
-	public static boolean checkCourseHasRelation(int courseId) throws DataNotFoundException {
+	public static boolean checkCourseHasRelation(int courseId) throws DataNotFoundException, IOException {
 
 		ArrayList<Course> courses = readBinaryFile();
 
@@ -126,16 +126,15 @@ public class CourseService {
 
 		if (!found) {
 			System.out.println("Course with ID " + courseId + " not found.");
-			throw new DataNotFoundException("Course with ID " + courseId + " not found.");			
+			throw new DataNotFoundException("Course with ID " + courseId + " not found.");
 		}
 
 		boolean hasStudents = CourseAssignService.checkStudentAssignedToCourse(courseId);
 		boolean hasInstructor = CourseAssignService.checkIntructorAssignedToCourse(courseId);
-
 		return hasStudents && hasInstructor;
 	}
 
-	public static boolean deleteCourse(int courseId) throws DataNotFoundException, CRUDFailedException {
+	public static boolean deleteCourse(int courseId) throws DataNotFoundException, CRUDFailedException, IOException {
 
 		ArrayList<Course> courses = readBinaryFile();
 

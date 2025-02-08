@@ -96,7 +96,7 @@ public class InstructorService {
 	}
 
 	// Check before delete
-	public static boolean checkInstructorHasRelation(int instructorId) throws DataNotFoundException {
+	public static boolean checkInstructorHasRelation(int instructorId) throws DataNotFoundException, IOException {
 		ArrayList<Instructor> instructors = readBinaryFile();
 		boolean found = false;
 
@@ -115,7 +115,8 @@ public class InstructorService {
 
 	}
 
-	public static boolean deleteInstructor(int instructorId) throws DataNotFoundException, CRUDFailedException {
+	public static boolean deleteInstructor(int instructorId)
+			throws DataNotFoundException, CRUDFailedException, IOException {
 		ArrayList<Instructor> instructors = readBinaryFile();
 
 		// Delete relations

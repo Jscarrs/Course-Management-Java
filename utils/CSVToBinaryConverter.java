@@ -83,7 +83,6 @@ public class CSVToBinaryConverter {
 	private static <T> T parseCSV(String line, Class<T> targetClass) throws InvalidCSVFormatException {
 		String fileName = null;
 		try {
-			System.out.println("Parseeee!");
 			if (targetClass == Course.class) {
 				fileName = COURSE_CSV;
 				return (T) parseCourse(line);

@@ -1,5 +1,6 @@
 package view;
 
+import java.io.IOException;
 import java.util.List;
 
 import exceptions.CRUDFailedException;
@@ -245,7 +246,7 @@ public class InstructorTab {
 				loadInstructors(instructorTable);
 			} catch (DataNotFoundException e) {
 				AlertDialog.showWarning("Result not found", e.getMessage());
-			} catch (CRUDFailedException e) {
+			} catch (CRUDFailedException | IOException e) {
 				AlertDialog.showWarning("Error", e.getMessage());
 			}
 		} else {
