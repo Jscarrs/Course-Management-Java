@@ -26,11 +26,8 @@ public class CSVToBinaryConverter {
 	private static final String INSTRUCTOR_CSV = "./data/instructors.csv";
 	private static final String STUDENT_CSV = "./data/students.csv";
 
-	// Delete all binary files before conversion
+	// Delete relational binary file when main files imported
 	public static void resetBinaryFiles() {
-		deleteFile(COURSE_BINARY);
-		deleteFile(INSTRUCTOR_BINARY);
-		deleteFile(STUDENT_BINARY);
 		deleteFile(COURSE_STUDENT_BINARY);
 		deleteFile(COURSE_INSTRUCTOR_BINARY);
 	}
@@ -43,71 +40,61 @@ public class CSVToBinaryConverter {
 	}
 
 	// Convert all CSV files to binary format
-	public static void convertAllCsvToBinary() {
-		resetBinaryFiles();
+	public static void convertAllCsvToBinary() throws InvalidCSVFormatException, IOException {
 
-		convertCsvToBinary(COURSE_CSV, COURSE_BINARY, Course.class);
-		convertCsvToBinary(INSTRUCTOR_CSV, INSTRUCTOR_BINARY, Instructor.class);
-		convertCsvToBinary(STUDENT_CSV, STUDENT_BINARY, Student.class);
+		boolean courseSucceed = convertCsvToBinary(COURSE_CSV, COURSE_BINARY, Course.class);
+		boolean instSucceed = convertCsvToBinary(INSTRUCTOR_CSV, INSTRUCTOR_BINARY, Instructor.class);
+		boolean studentSucceed = convertCsvToBinary(STUDENT_CSV, STUDENT_BINARY, Student.class);
+
+		// If all imports are successful then delete old relational files
+		if (courseSucceed && instSucceed && studentSucceed)
+			resetBinaryFiles();
 	}
 
 	// Convert CSV file to binary
-	public static <T> void convertCsvToBinary(String csvFilePath, String binaryFilePath, Class<T> targetClass) {
+	public static <T> boolean convertCsvToBinary(String csvFilePath, String binaryFilePath, Class<T> targetClass)
+			throws InvalidCSVFormatException, IOException {
 		File csvFile = new File(csvFilePath);
 		if (!csvFile.exists())
-			return;
+			return false;
 
 		List<T> dataList = new ArrayList<>();
 		try (BufferedReader br = new BufferedReader(new FileReader(csvFilePath))) {
 			br.readLine(); // Skip header
 			String line;
 			while ((line = br.readLine()) != null) {
-				if (validateCSVFormat(line, targetClass)) {
-					T obj = parseCSV(line, targetClass);
-					if (obj != null) {
-						dataList.add(obj);
-					}
-				}
+				T obj = parseCSV(line, targetClass);
+				dataList.add(obj);
 			}
 		} catch (IOException e) {
-			e.printStackTrace();
+			throw e;
 		}
 
 		try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(binaryFilePath))) {
 			oos.writeObject(dataList);
+			return true;
 		} catch (IOException e) {
-			e.printStackTrace();
+			throw e;
 		}
-	}
-
-	// Validate CSV format before parsing
-	private static boolean validateCSVFormat(String line, Class<?> targetClass) {
-		String[] values = line.split(",");
-
-		if (targetClass == Course.class) {
-			return values.length == 3 && isInteger(values[0]) && !values[1].trim().isEmpty() && isInteger(values[2]);
-		} else if (targetClass == Instructor.class) {
-			return values.length == 4 && isInteger(values[0]) && !values[1].trim().isEmpty()
-					&& !values[2].trim().isEmpty() && !values[3].trim().isEmpty();
-		} else if (targetClass == Student.class) {
-			return values.length == 3 && isInteger(values[0]) && !values[1].trim().isEmpty()
-					&& !values[2].trim().isEmpty();
-		}
-		return false;
 	}
 
 	// Parse CSV line into corresponding object
-	private static <T> T parseCSV(String line, Class<T> targetClass) {
+	@SuppressWarnings("unchecked")
+	private static <T> T parseCSV(String line, Class<T> targetClass) throws InvalidCSVFormatException {
+		String fileName = null;
 		try {
 			if (targetClass == Course.class) {
+				fileName = COURSE_CSV;
 				return (T) parseCourse(line);
 			} else if (targetClass == Instructor.class) {
+				fileName = INSTRUCTOR_CSV;
 				return (T) parseInstructor(line);
 			} else if (targetClass == Student.class) {
+				fileName = STUDENT_CSV;
 				return (T) parseStudent(line);
 			}
 		} catch (InvalidCSVFormatException e) {
-			System.out.println("Invalid CSV format: " + e.getMessage());
+			throw new InvalidCSVFormatException(("Invalid CSV format: " + fileName + "\n" + e.getMessage()));
 		}
 		return null;
 	}

@@ -1,5 +1,8 @@
 
 // Main.java
+import java.io.IOException;
+
+import exceptions.InvalidCSVFormatException;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.control.Menu;
@@ -8,6 +11,8 @@ import javafx.scene.control.MenuItem;
 import javafx.scene.control.TabPane;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
+import utils.CSVToBinaryConverter;
+import view.AlertDialog;
 import view.CourseTab;
 import view.InstructorTab;
 import view.StudentTab;
@@ -39,10 +44,11 @@ public class Main extends Application {
 		MenuBar menuBar = new MenuBar();
 
 		Menu fileMenu = new Menu("File");
-		MenuItem saveItem = new MenuItem("Import CSV file");
+		MenuItem uploadItem = new MenuItem("Import CSV file");
+		uploadItem.setOnAction(e -> showUpload());
 		MenuItem exitItem = new MenuItem("Exit");
 		exitItem.setOnAction(e -> primaryStage.close());
-		fileMenu.getItems().addAll(saveItem, exitItem);
+		fileMenu.getItems().addAll(uploadItem, exitItem);
 
 		Menu helpMenu = new Menu("Help");
 		MenuItem aboutItem = new MenuItem("About");
@@ -53,11 +59,27 @@ public class Main extends Application {
 		return menuBar;
 	}
 
+	private void showUpload() {
+		boolean isConfirmed = AlertDialog.showConfirm("Confirm",
+				"Importing a new file will delete all existing data and override it. Are you sure you want to proceed?");
+		if (isConfirmed) {
+			try {
+				CSVToBinaryConverter.convertAllCsvToBinary();
+				AlertDialog.showSuccess("File upload", "Successfully imported data.");
+
+			} catch (InvalidCSVFormatException | IOException e) {
+				AlertDialog.showWarning("Error", e.getMessage());
+			}
+		} else {
+			AlertDialog.showWarning("File upload", "File upload cancelled");
+		}
+	}
+
 	private void showAboutDialog() {
 		javafx.scene.control.Alert alert = new javafx.scene.control.Alert(
 				javafx.scene.control.Alert.AlertType.INFORMATION);
 		alert.setTitle("About");
-		alert.setHeaderText("Developed by Group 1");
+		alert.setHeaderText("Developed by Team 2");
 		alert.setContentText("Ari\nSamuel\nScarlett");
 		alert.showAndWait();
 	}
