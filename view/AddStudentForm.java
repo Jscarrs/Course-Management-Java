@@ -15,6 +15,8 @@ import model.Student;
 import service.StudentService;
 import exceptions.CRUDFailedException;
 import exceptions.DataNotFoundException;
+import java.util.regex.Pattern;
+import java.util.regex.Matcher;
 
 public class AddStudentForm {
 
@@ -53,13 +55,20 @@ public class AddStudentForm {
         stage.showAndWait();
     }
 
+    private boolean isValidEmail(String email) {
+        String emailRegex = "^[a-zA-Z0-9_+&*-]+(?:\\.[a-zA-Z0-9_+&*-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,7}$";
+        Pattern pattern = Pattern.compile(emailRegex);
+        Matcher matcher = pattern.matcher(email);
+        return matcher.matches();
+    }
+
     private void handleAddStudent(TextField idField, TextField nameField, TextField emailField, TableView<Student> studentTable, Stage stage) {
         try {
             int StudentId = Integer.parseInt(idField.getText());
             String name = nameField.getText();
             String email = emailField.getText();
 
-            if (StudentId<=0) {
+            if (StudentId <= 0) {
                 AlertDialog.showWarning("Invalid Input", "ID cannot be empty.");
                 return;
             }
@@ -71,6 +80,11 @@ public class AddStudentForm {
 
             if (email.isEmpty()) {
                 AlertDialog.showWarning("Invalid Input", "Email cannot be empty.");
+                return;
+            }
+
+            if (!isValidEmail(email)) {
+                AlertDialog.showWarning("Invalid Input", "Email format is invalid.");
                 return;
             }
 
