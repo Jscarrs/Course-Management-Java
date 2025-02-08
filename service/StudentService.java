@@ -111,20 +111,16 @@ public class StudentService {
 
 	}
 
-	public static void deleteStudent(int studentId) throws DataNotFoundException, CRUDFailedException, IOException {
-		ArrayList<Student> students = readStudents();
-		// Delete relations
-		try {
-			CourseAssignService.deleteAllCourseFromStudent(studentId);
-		} catch (IOException e) {
-			e.printStackTrace();
-			throw new CRUDFailedException("Error deleting student courses.");
-		}
+	public static boolean deleteStudent(int studentId) throws DataNotFoundException, CRUDFailedException, IOException {
+		ArrayList<Student> students = readBinaryFile();
 
-		// Delete record
+		// Deleting all relations
+		CourseAssignService.deleteAllCourseFromStudent(studentId);
+
+		// Deleting main record
 		students.removeIf(student -> student.getStudentId() == studentId);
-		saveStudents(students);
-		System.out.println("Student deleted successfully.");
+		writeBinaryFile(students);
+		return true;
 	}
 
 	public static Student searchStudentById(int studentId) throws DataNotFoundException {
