@@ -6,7 +6,6 @@ import java.io.RandomAccessFile;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Scanner;
 
 import exceptions.CRUDFailedException;
 import exceptions.DataNotFoundException;
@@ -29,13 +28,17 @@ public class CourseAssignService implements Serializable {
 	}
 
 	public static boolean assignInstructorToCourse(int courseId, int instructorId)
-			throws IOException, CRUDFailedException {
+			throws IOException, CRUDFailedException, DataNotFoundException {
 
 		isFileExists(filePathInstructor);
 
 		if (isIntructorAssignedToCourse(courseId)) {
 			return false;
 		}
+
+		// Checking if Instructor exists - If not throw exception
+		InstructorService.searchInstructorById(instructorId);
+		CourseService.searchCourseById(courseId);
 
 		try (RandomAccessFile file = new RandomAccessFile(filePathInstructor, "rw")) {
 			file.seek(file.length());
@@ -47,12 +50,17 @@ public class CourseAssignService implements Serializable {
 		}
 	}
 
-	public static boolean assignStudentToCourse(int courseId, int studentId) throws IOException, CRUDFailedException {
+	public static boolean assignStudentToCourse(int courseId, int studentId)
+			throws IOException, CRUDFailedException, DataNotFoundException {
 		isFileExists(filePathStudents);
 
 		if (isStudentCourseAssigned(courseId, studentId)) {
 			return false;
 		}
+
+		// Checking if both exists - If not throw exception
+		StudentService.searchStudentById(studentId);
+		CourseService.searchCourseById(courseId);
 
 		try (RandomAccessFile file = new RandomAccessFile(filePathStudents, "rw")) {
 			file.seek(file.length());
@@ -127,7 +135,7 @@ public class CourseAssignService implements Serializable {
 	// Used in delete functions
 	protected static boolean checkStudentAssignedToCourse(int pcourse) throws IOException {
 
-		if (!isDeletePathExist(filePathInstructor))
+		if (!isDeletePathExist(filePathStudents))
 			return false;
 
 		try (RandomAccessFile file = new RandomAccessFile(filePathStudents, "r")) {
@@ -147,7 +155,7 @@ public class CourseAssignService implements Serializable {
 	// Used in delete functions
 	protected static boolean checkStudentHasCourse(int pstudentId) throws IOException {
 
-		if (!isDeletePathExist(filePathInstructor))
+		if (!isDeletePathExist(filePathStudents))
 			return false;
 
 		try (RandomAccessFile file = new RandomAccessFile(filePathStudents, "r")) {
@@ -170,7 +178,7 @@ public class CourseAssignService implements Serializable {
 	 */
 	private static boolean isStudentCourseAssigned(int pcourseId, int pstudentId)
 			throws IOException, CRUDFailedException {
-		try (RandomAccessFile file = new RandomAccessFile(filePathInstructor, "r")) {
+		try (RandomAccessFile file = new RandomAccessFile(filePathStudents, "r")) {
 			while (file.getFilePointer() < file.length()) {
 				int courseId = file.readInt();
 				int studentId = file.readInt();
@@ -241,7 +249,7 @@ public class CourseAssignService implements Serializable {
 	}
 
 	// Delete specific course - student relation
-	private static boolean deleteCourseStudent(int pcourseId, int pstudentId) throws CRUDFailedException, IOException {
+	public static boolean deleteCourseStudent(int pcourseId, int pstudentId) throws CRUDFailedException, IOException {
 		if (isDeletePathExist(filePathStudents)) {
 			List<CourseStudents> keepingList = new ArrayList<>();
 			boolean isDeletedRec = false;
@@ -330,7 +338,7 @@ public class CourseAssignService implements Serializable {
 	}
 
 	// Delete specific course - instructor relation
-	private static boolean deleteCourseInstructor(int pcourseId, int pintructorId)
+	public static boolean deleteCourseInstructor(int pcourseId, int pintructorId)
 			throws CRUDFailedException, IOException {
 		if (isDeletePathExist(filePathInstructor)) {
 

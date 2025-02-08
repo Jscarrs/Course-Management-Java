@@ -1,25 +1,24 @@
-/**
- *
- * @author Ariunjarg
- * @created Feb 6, 2025
- */
 package view;
 
+import java.io.IOException;
+
+import exceptions.CRUDFailedException;
+import exceptions.DataNotFoundException;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
-import javafx.scene.Scene;
-import javafx.scene.control.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.Tab;
+import javafx.scene.control.TableCell;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
+import javafx.scene.control.TextField;
 import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
-import javafx.util.converter.IntegerStringConverter;
-import model.Student; 
-import service.StudentService; 
-import exceptions.DataNotFoundException;
-import exceptions.CRUDFailedException;
-import java.io.IOException;
-import view.AddStudentForm;
+import model.Student;
+import service.StudentService;
 
 public class StudentTab {
 
@@ -59,50 +58,50 @@ public class StudentTab {
         return vbox;
     }
 
-    private void setupTableColumns(TableView<Student> studentTable) {
-        TableColumn<Student, Integer> idCol = new TableColumn<>("Student ID");
-        idCol.setCellValueFactory(data -> new javafx.beans.property.SimpleIntegerProperty(data.getValue().getStudentId()).asObject());
+	private void setupTableColumns(TableView<Student> studentTable) {
+		TableColumn<Student, Integer> idCol = new TableColumn<>("Student ID");
+		idCol.setCellValueFactory(data -> new javafx.beans.property.SimpleIntegerProperty(data.getValue().getStudentId()).asObject());
+		
+		TableColumn<Student, String> nameCol = new TableColumn<>("Name");
+		nameCol.setCellFactory(TextFieldTableCell.forTableColumn());
+		nameCol.setOnEditCommit(event -> handleEditStudent(event, studentTable));
+		nameCol.setCellValueFactory(data -> new javafx.beans.property.SimpleStringProperty(data.getValue().getName()));
 
-        TableColumn<Student, String> nameCol = new TableColumn<>("Name");
-        nameCol.setCellFactory(TextFieldTableCell.forTableColumn());
-        nameCol.setOnEditCommit(event -> handleEditStudent(event, studentTable));
-        nameCol.setCellValueFactory(data -> new javafx.beans.property.SimpleStringProperty(data.getValue().getName()));
+		TableColumn<Student, String> emailCol = new TableColumn<>("Email");
+		emailCol.setCellFactory(TextFieldTableCell.forTableColumn());
+		emailCol.setOnEditCommit(event -> handleEditStudent(event, studentTable));
+		emailCol.setCellValueFactory(data -> new javafx.beans.property.SimpleStringProperty(data.getValue().getEmail()));
 
-        TableColumn<Student, String> emailCol = new TableColumn<>("Email");
-        emailCol.setCellFactory(TextFieldTableCell.forTableColumn());
-        emailCol.setOnEditCommit(event -> handleEditStudent(event, studentTable));
-        emailCol.setCellValueFactory(data -> new javafx.beans.property.SimpleStringProperty(data.getValue().getEmail()));
-
-        TableColumn<Student, Void> actionCol = new TableColumn<>("Actions");
-        actionCol.setCellFactory(param -> new TableCell<>() {
-            private final Button deleteBtn = new Button("Delete");
-            {
-                deleteBtn.setOnAction(e -> {
-                    Student s = getTableView().getItems().get(getIndex());
-                    handleDeleteStudent(s, studentTable);
-                });
-            }
-            @Override
-            protected void updateItem(Void item, boolean empty) {
-                super.updateItem(item, empty);
-                setGraphic(empty ? null : deleteBtn);
-            }
-        });
+		TableColumn<Student, Void> actionCol = new TableColumn<>("Actions");
+		actionCol.setCellFactory(param -> new TableCell<>() {
+			private final Button deleteBtn = new Button("Delete");
+			{
+				deleteBtn.setOnAction(e -> {
+					Student s = getTableView().getItems().get(getIndex());
+					handleDeleteStudent(s, studentTable);
+				});
+			}
+			@Override
+			protected void updateItem(Void item, boolean empty) {
+				super.updateItem(item, empty);
+				setGraphic(empty ? null : deleteBtn);
+			}
+		});
 
         studentTable.getColumns().addAll(idCol, nameCol, emailCol, actionCol);
         studentTable.setEditable(true);
     }
 
-    private void loadStudents(TableView<Student> studentTable) {
-        try {
-            ObservableList<Student> studentList = FXCollections.observableArrayList(
-                    StudentService.listStudents()
-            );
-            studentTable.setItems(studentList);
-        } catch (Exception e) {
-            // Error handling
-        }
-    }
+	private void loadStudents(TableView<Student> studentTable) {
+		try {
+			ObservableList<Student> studentList = FXCollections.observableArrayList(
+					StudentService.listStudents()
+			);
+			studentTable.setItems(studentList);
+		} catch (Exception e) {
+			// Error handling
+		}
+	}
 
     private void clickSearchButton(TextField searchField, TableView<Student> studentTable) {
         String input = searchField.getText();
@@ -180,32 +179,27 @@ public class StudentTab {
             return;
         }
 
-        boolean isConfirmed = AlertDialog.showConfirm("Confirm Delete", "Are you sure you want to delete the student: "
-                + s.getStudentId() + " - " + s.getName() + "?");
+		boolean isConfirmed = AlertDialog.showConfirm("Confirm Delete", "Are you sure you want to delete the student: "
+				+ s.getStudentId() + " - " + s.getName() + "?");
 
-        if (isConfirmed) {
-            try {
-                try {
-                    boolean isSuccess = StudentService.deleteStudent(s.getStudentId());
-                    if (isSuccess) {
-                        AlertDialog.showSuccess("Success", "Successfully deleted student: " + s.getStudentId());
-                        loadStudents(studentTable);
-                    }
-                } catch (IOException e) {
-                    AlertDialog.showWarning("Error", "Failed to delete student due to an IO error.");
-                }
-            } catch (DataNotFoundException e) {
-                AlertDialog.showWarning("Result not found", e.getMessage());
-            } catch (CRUDFailedException e) {
-                AlertDialog.showWarning("Error", e.getMessage());
-            }
-        } else {
-            AlertDialog.showWarning("Delete", "Deletion canceled");
-        }
-    }
-
-    private boolean isValidEmail(String email) {
-        String emailRegex = "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$";
-        return email.matches(emailRegex);
-    }
+		if (isConfirmed) {
+			try {
+				try {
+					boolean isSuccess = StudentService.deleteStudent(s.getStudentId());
+					if (isSuccess) {
+						AlertDialog.showSuccess("Success", "Successfully deleted student: " + s.getStudentId());
+						loadStudents(studentTable);
+					}
+				} catch (IOException e) {
+					AlertDialog.showWarning("Error", "Failed to delete student due to an IO error.");
+				}
+			} catch (DataNotFoundException e) {
+				AlertDialog.showWarning("Result not found", e.getMessage());
+			} catch (CRUDFailedException e) {
+				AlertDialog.showWarning("Error", e.getMessage());
+			}
+		} else {
+			AlertDialog.showWarning("Delete", "Deletion canceled");
+		}
+	}
 }
