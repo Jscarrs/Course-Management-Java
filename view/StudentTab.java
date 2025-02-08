@@ -1,25 +1,24 @@
-/**
- *
- * @author Ariunjargal Erdenebaatar
- * @created Feb 6, 2025
- */
 package view;
 
+import java.io.IOException;
+
+import exceptions.CRUDFailedException;
+import exceptions.DataNotFoundException;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
-import javafx.scene.Scene;
-import javafx.scene.control.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.Tab;
+import javafx.scene.control.TableCell;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
+import javafx.scene.control.TextField;
 import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
-import javafx.util.converter.IntegerStringConverter;
-import model.Student; 
-import service.StudentService; 
-import exceptions.DataNotFoundException;
-import exceptions.CRUDFailedException;
-import java.io.IOException;
-import view.AddStudentForm;
+import model.Student;
+import service.StudentService;
 
 public class StudentTab {
 
@@ -61,8 +60,9 @@ public class StudentTab {
 
 	private void setupTableColumns(TableView<Student> studentTable) {
 		TableColumn<Student, Integer> idCol = new TableColumn<>("Student ID");
-		idCol.setCellValueFactory(data -> new javafx.beans.property.SimpleIntegerProperty(data.getValue().getStudentId()).asObject());
-		
+		idCol.setCellValueFactory(
+				data -> new javafx.beans.property.SimpleIntegerProperty(data.getValue().getStudentId()).asObject());
+
 		TableColumn<Student, String> nameCol = new TableColumn<>("Name");
 		nameCol.setCellFactory(TextFieldTableCell.forTableColumn());
 		nameCol.setOnEditCommit(event -> handleEditStudent(event, studentTable));
@@ -71,7 +71,8 @@ public class StudentTab {
 		TableColumn<Student, String> emailCol = new TableColumn<>("Email");
 		emailCol.setCellFactory(TextFieldTableCell.forTableColumn());
 		emailCol.setOnEditCommit(event -> handleEditStudent(event, studentTable));
-		emailCol.setCellValueFactory(data -> new javafx.beans.property.SimpleStringProperty(data.getValue().getEmail()));
+		emailCol.setCellValueFactory(
+				data -> new javafx.beans.property.SimpleStringProperty(data.getValue().getEmail()));
 
 		TableColumn<Student, Void> actionCol = new TableColumn<>("Actions");
 		actionCol.setCellFactory(param -> new TableCell<>() {
@@ -82,6 +83,7 @@ public class StudentTab {
 					handleDeleteStudent(s, studentTable);
 				});
 			}
+
 			@Override
 			protected void updateItem(Void item, boolean empty) {
 				super.updateItem(item, empty);
@@ -95,9 +97,7 @@ public class StudentTab {
 
 	private void loadStudents(TableView<Student> studentTable) {
 		try {
-			ObservableList<Student> studentList = FXCollections.observableArrayList(
-					StudentService.listStudents()
-			);
+			ObservableList<Student> studentList = FXCollections.observableArrayList(StudentService.listStudents());
 			studentTable.setItems(studentList);
 		} catch (Exception e) {
 			// Error handling
@@ -155,23 +155,34 @@ public class StudentTab {
 			return;
 		}
 
-		boolean isConfirmed = AlertDialog.showConfirm("Confirm Delete", "Are you sure you want to delete the student: "
-				+ s.getStudentId() + " - " + s.getName() + "?");
+		boolean isConfirmed = AlertDialog.showConfirm("Confirm Delete",
+				"Are you sure you want to delete the student: " + s.getStudentId() + " - " + s.getName() + "?");
 
 		if (isConfirmed) {
+
+			boolean hasRel;
 			try {
-				try {
-					boolean isSuccess = StudentService.deleteStudent(s.getStudentId());
-					if (isSuccess) {
-						AlertDialog.showSuccess("Success", "Successfully deleted student: " + s.getStudentId());
-						loadStudents(studentTable);
+				hasRel = StudentService.checkStudentHasRelation(s.getStudentId());
+				if (hasRel) {
+					isConfirmed = AlertDialog.showConfirm("Confirm",
+							"This student has enrolled to course. Do you want to delete them as well?");
+
+					if (!isConfirmed) {
+						AlertDialog.showWarning("Delete", "Deletion canceled");
+						return;
+
 					}
-				} catch (IOException e) {
-					AlertDialog.showWarning("Error", "Failed to delete student due to an IO error.");
 				}
+
+				boolean isSuccess = StudentService.deleteStudent(s.getStudentId());
+				if (isSuccess) {
+					AlertDialog.showSuccess("Success", "Successfully deleted student: " + s.getStudentId());
+					loadStudents(studentTable);
+				}
+
 			} catch (DataNotFoundException e) {
 				AlertDialog.showWarning("Result not found", e.getMessage());
-			} catch (CRUDFailedException e) {
+			} catch (CRUDFailedException | IOException e) {
 				AlertDialog.showWarning("Error", e.getMessage());
 			}
 		} else {
