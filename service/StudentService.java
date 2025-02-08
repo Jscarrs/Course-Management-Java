@@ -57,35 +57,22 @@ public class StudentService {
 			throw new CRUDFailedException("Error reading input! Ensure correct format.");
 		}
 	}
-	public static void updateStudent() {
-		Scanner scanner = new Scanner(System.in);
-
-		System.out.print("Enter Student ID to update: ");
-		int id = scanner.nextInt();
-		scanner.nextLine();
-
-		ArrayList<Student> students = readStudents();
+	public static boolean updateStudent(Student newStudent) throws CRUDFailedException, DataNotFoundException {
+		ArrayList<Student> students = readBinaryFile();
 		boolean found = false;
-
-		for (Student student : students) {
-			if (student.getStudentId() == id) {
-				System.out.print("Enter new Student Name: ");
-				String name = scanner.nextLine();
-				System.out.print("Enter new Student Email: ");
-				String email = scanner.nextLine();
-
-				student.setName(name);
-				student.setEmail(email);
+		for (Student s : students) {
+			if (s.getStudentId() == newStudent.getStudentId()) {
+				s.setName(newStudent.getName());
+				s.setEmail(newStudent.getEmail()); 
 				found = true;
 				break;
 			}
 		}
-
 		if (found) {
-			saveStudents(students);
-			System.out.println("Student updated successfully!");
+			writeBinaryFile(students);
+			return true;
 		} else {
-			System.out.println("Student with ID " + id + " not found.");
+			throw new DataNotFoundException("Student with ID " + newStudent.getStudentId() + " not found.");
 		}
 	}
 
@@ -115,14 +102,24 @@ public class StudentService {
 			throw new DataNotFoundException("Student with ID " + studentId + " not found.");
 		}
 
-		return CourseAssignService.checkStudentHasCourse(studentId);
+		try {
+			return CourseAssignService.checkStudentHasCourse(studentId);
+		} catch (IOException e) {
+			e.printStackTrace();
+			throw new DataNotFoundException("Error checking student course relation.");
+		}
 
 	}
 
 	public static void deleteStudent(int studentId) throws DataNotFoundException, CRUDFailedException {
 		ArrayList<Student> students = readStudents();
 		// Delete relations
-		CourseAssignService.deleteAllCourseFromStudent(studentId);
+		try {
+			CourseAssignService.deleteAllCourseFromStudent(studentId);
+		} catch (IOException e) {
+			e.printStackTrace();
+			throw new CRUDFailedException("Error deleting student courses.");
+		}
 
 		// Delete record
 		students.removeIf(student -> student.getStudentId() == studentId);

@@ -17,6 +17,7 @@ import javafx.util.converter.IntegerStringConverter;
 import model.Student; // 假設有 Student 模型
 import service.StudentService; // 與 CourseTab 相同結構
 import exceptions.DataNotFoundException;
+import exceptions.CRUDFailedException;
 /**
  * 
  */
@@ -64,6 +65,11 @@ public class StudentTab {
 		nameCol.setOnEditCommit(event -> handleEditStudent(event, studentTable));
 		nameCol.setCellValueFactory(data -> new javafx.beans.property.SimpleStringProperty(data.getValue().getName()));
 
+		TableColumn<Student, String> emailCol = new TableColumn<>("Email");
+		emailCol.setCellFactory(TextFieldTableCell.forTableColumn());
+		emailCol.setOnEditCommit(event -> handleEditStudent(event, studentTable));
+		emailCol.setCellValueFactory(data -> new javafx.beans.property.SimpleStringProperty(data.getValue().getEmail()));
+
 		// 可再新增更多欄位 (Email、等)
 
 		// 動作欄位 (刪除)
@@ -83,7 +89,7 @@ public class StudentTab {
 			}
 		});
 
-		studentTable.getColumns().addAll(idCol, nameCol, actionCol);
+		studentTable.getColumns().addAll(idCol, nameCol, emailCol, actionCol);
 		studentTable.setEditable(true);
 	}
 
@@ -131,6 +137,19 @@ public class StudentTab {
 		if ("Name".equals(event.getTableColumn().getText())) {
 			s.setName(event.getNewValue().toString());
 			// 更新後呼叫 [`StudentService.updateStudent()`](service/StudentService.java)
+		}
+		if ("Email".equals(event.getTableColumn().getText())) {
+			s.setEmail(event.getNewValue().toString());
+			try {
+				try {
+					StudentService.updateStudent(s); // Similar to [`CourseService.updateCourse`](service/CourseService.java)
+				} catch (DataNotFoundException e) {
+					// Handle the exception, e.g., show an alert dialog
+					AlertDialog.showWarning("Update Failed", e.getMessage());
+				}
+			} catch (CRUDFailedException e) {
+				// 錯誤處理略
+			}
 		}
 		// 更新表格
 	}
