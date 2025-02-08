@@ -13,7 +13,9 @@ import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 import utils.CSVToBinaryConverter;
 import view.AlertDialog;
+import view.AssignInstructorTab;
 import view.CourseTab;
+import view.EnrollCourseTab;
 import view.InstructorTab;
 import view.StudentTab;
 
@@ -30,7 +32,8 @@ public class Main extends Application {
 
 		// Tab Pane
 		TabPane tabPane = new TabPane();
-		tabPane.getTabs().addAll(new CourseTab().getTab(), new InstructorTab().getTab(), new StudentTab().getTab());
+		tabPane.getTabs().addAll(new CourseTab().getTab(), new InstructorTab().getTab(), new StudentTab().getTab(),
+				new AssignInstructorTab().getTab(), new EnrollCourseTab().getTab());
 		root.setCenter(tabPane);
 
 		// Scene and Stage

@@ -85,7 +85,7 @@ public class StudentService {
 	}
 
 	// Check before delete
-	public static boolean checkStudentHasRelation(int studentId) throws DataNotFoundException {
+	public static boolean checkStudentHasRelation(int studentId) throws DataNotFoundException, IOException {
 
 		ArrayList<Student> students = readStudents();
 		boolean found = false;
@@ -111,7 +111,7 @@ public class StudentService {
 
 	}
 
-	public static void deleteStudent(int studentId) throws DataNotFoundException, CRUDFailedException {
+	public static void deleteStudent(int studentId) throws DataNotFoundException, CRUDFailedException, IOException {
 		ArrayList<Student> students = readStudents();
 		// Delete relations
 		try {
