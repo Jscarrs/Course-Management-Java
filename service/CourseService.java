@@ -110,7 +110,7 @@ public class CourseService {
 		throw new DataNotFoundException("Course with ID " + courseId + " not found.");
 	}
 
-	// Check before delete
+	// Check before delete - for UI confirm
 	public static boolean checkCourseHasRelation(int courseId) throws DataNotFoundException, IOException {
 
 		ArrayList<Course> courses = readBinaryFile();
@@ -138,9 +138,13 @@ public class CourseService {
 
 		ArrayList<Course> courses = readBinaryFile();
 
-		// Deleting all relations
-		CourseAssignService.deleteAllStudentFromCourse(courseId);
-		CourseAssignService.deleteAllInstructorFromCourse(courseId);
+		// Deleting all relations - if exist
+		if (CourseAssignService.checkStudentAssignedToCourse(courseId))
+			CourseAssignService.deleteAllStudentFromCourse(courseId);
+
+		if (CourseAssignService.checkIntructorAssignedToCourse(courseId))
+			CourseAssignService.deleteAllInstructorFromCourse(courseId);
+
 		// Deleting main record
 		courses.removeIf(course -> course.getCourseId() == courseId);
 		writeBinaryFile(courses);

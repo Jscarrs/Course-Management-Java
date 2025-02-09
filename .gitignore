@@ -11,3 +11,5 @@ data/courses.dat
 data/instructors.dat
 /Main.class
 .classpath
+view/AddStudentForm.class
+*.class

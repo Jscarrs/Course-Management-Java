@@ -216,7 +216,7 @@ public class CourseTab {
 				hasRel = CourseService.checkCourseHasRelation(course.getCourseId());
 				if (hasRel) {
 					isConfirmed = AlertDialog.showConfirm("Confirm",
-							"This course has assigned students/instructors. Do you want to delete them as well?");
+							"This course has assigned students/instructors. Do you want to delete assignments as well?");
 
 					if (!isConfirmed) {
 						AlertDialog.showWarning("Delete", "Deletion canceled");

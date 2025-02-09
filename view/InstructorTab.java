@@ -227,7 +227,7 @@ public class InstructorTab {
 				hasRel = InstructorService.checkInstructorHasRelation(instructor.getInstructorId());
 				if (hasRel) {
 					isConfirmed = AlertDialog.showConfirm("Confirm",
-							"This instructor has assigned course. Do you want to delete them as well?");
+							"This instructor has assigned course. Do you want to delete assignment as well?");
 
 					if (!isConfirmed) {
 						AlertDialog.showWarning("Delete", "Deletion canceled");

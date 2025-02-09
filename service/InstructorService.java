@@ -95,7 +95,7 @@ public class InstructorService {
 		return false;
 	}
 
-	// Check before delete
+	// Check before delete - for UI confirm
 	public static boolean checkInstructorHasRelation(int instructorId) throws DataNotFoundException, IOException {
 		ArrayList<Instructor> instructors = readBinaryFile();
 		boolean found = false;
@@ -119,8 +119,9 @@ public class InstructorService {
 			throws DataNotFoundException, CRUDFailedException, IOException {
 		ArrayList<Instructor> instructors = readBinaryFile();
 
-		// Delete relations
-		CourseAssignService.deleteAllCourseFromInstructor(instructorId);
+		// Delete relations - if exists
+		if (CourseAssignService.checkIntructorHasCourse(instructorId))
+			CourseAssignService.deleteAllCourseFromInstructor(instructorId);
 
 		// Delete record
 		instructors.removeIf(instructor -> instructor.getInstructorId() == instructorId);

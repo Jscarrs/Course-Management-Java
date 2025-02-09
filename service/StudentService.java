@@ -20,28 +20,28 @@ public class StudentService {
 	private static final String FILE_PATH = "./data/students.dat";
 
 	// public static void addStudent() {
-	// 	Scanner scanner = new Scanner(System.in);
+	// Scanner scanner = new Scanner(System.in);
 
-	// 	System.out.print("Enter Student ID: ");
-	// 	int id = scanner.nextInt();
-	// 	scanner.nextLine();
+	// System.out.print("Enter Student ID: ");
+	// int id = scanner.nextInt();
+	// scanner.nextLine();
 
-	// 	if (isStudentExists(id)) {
-	// 		System.out.println("Student ID already exists. Please enter a unique ID.");
-	// 		return;
-	// 	}
+	// if (isStudentExists(id)) {
+	// System.out.println("Student ID already exists. Please enter a unique ID.");
+	// return;
+	// }
 
-	// 	System.out.print("Enter Student Name: ");
-	// 	String name = scanner.nextLine();
-	// 	System.out.print("Enter Student Email: ");
-	// 	String email = scanner.nextLine();
+	// System.out.print("Enter Student Name: ");
+	// String name = scanner.nextLine();
+	// System.out.print("Enter Student Email: ");
+	// String email = scanner.nextLine();
 
-	// 	Student newStudent = new Student(id, name, email);
-	// 	ArrayList<Student> students = readStudents();
-	// 	students.add(newStudent);
-	// 	saveStudents(students);
+	// Student newStudent = new Student(id, name, email);
+	// ArrayList<Student> students = readStudents();
+	// students.add(newStudent);
+	// saveStudents(students);
 
-	// 	System.out.println("Student added successfully!");
+	// System.out.println("Student added successfully!");
 	// }
 	public static boolean addStudent(Student student) throws CRUDFailedException, DataNotFoundException {
 		try {
@@ -57,13 +57,14 @@ public class StudentService {
 			throw new CRUDFailedException("Error reading input! Ensure correct format.");
 		}
 	}
+
 	public static boolean updateStudent(Student newStudent) throws CRUDFailedException, DataNotFoundException {
 		ArrayList<Student> students = readBinaryFile();
 		boolean found = false;
 		for (Student s : students) {
 			if (s.getStudentId() == newStudent.getStudentId()) {
 				s.setName(newStudent.getName());
-				s.setEmail(newStudent.getEmail()); 
+				s.setEmail(newStudent.getEmail());
 				found = true;
 				break;
 			}
@@ -84,7 +85,7 @@ public class StudentService {
 		return students;
 	}
 
-	// Check before delete
+	// Check before delete - for UI confirm
 	public static boolean checkStudentHasRelation(int studentId) throws DataNotFoundException, IOException {
 
 		ArrayList<Student> students = readStudents();
@@ -114,9 +115,8 @@ public class StudentService {
 	public static boolean deleteStudent(int studentId) throws DataNotFoundException, CRUDFailedException, IOException {
 		ArrayList<Student> students = readBinaryFile();
 
-
-		CourseAssignService.deleteAllCourseFromStudent(studentId);
-
+		if (CourseAssignService.checkStudentHasCourse(studentId))
+			CourseAssignService.deleteAllCourseFromStudent(studentId);
 
 		students.removeIf(student -> student.getStudentId() == studentId);
 		writeBinaryFile(students);
@@ -167,6 +167,7 @@ public class StudentService {
 			e.printStackTrace();
 		}
 	}
+
 	@SuppressWarnings("unchecked")
 	private static ArrayList<Student> readBinaryFile() throws DataNotFoundException {
 		ArrayList<Student> list = new ArrayList<>();
@@ -185,6 +186,7 @@ public class StudentService {
 			throw new CRUDFailedException("Error saving student data!");
 		}
 	}
+
 	private static void appendToBinaryFile(Student student) throws DataNotFoundException, CRUDFailedException {
 		ArrayList<Student> students = readBinaryFile();
 		students.add(student);

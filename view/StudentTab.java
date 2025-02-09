@@ -103,8 +103,7 @@ public class StudentTab {
 
 	private void loadStudents(TableView<Student> studentTable) {
 		try {
-			ObservableList<Student> studentList = FXCollections.observableArrayList(
-					StudentService.listStudents());
+			ObservableList<Student> studentList = FXCollections.observableArrayList(StudentService.listStudents());
 			studentTable.setItems(studentList);
 		} catch (Exception e) {
 			// Error handling
@@ -187,24 +186,34 @@ public class StudentTab {
 			return;
 		}
 
-		boolean isConfirmed = AlertDialog.showConfirm("Confirm Delete", "Are you sure you want to delete the student: "
-				+ s.getStudentId() + " - " + s.getName() + "?");
+		boolean isConfirmed = AlertDialog.showConfirm("Confirm Delete",
+				"Are you sure you want to delete the student: " + s.getStudentId() + " - " + s.getName() + "?");
 
 		if (isConfirmed) {
 			try {
-				try {
-					boolean isSuccess = StudentService.deleteStudent(s.getStudentId());
-					if (isSuccess) {
-						AlertDialog.showSuccess("Success", "Successfully deleted student: " + s.getStudentId());
-						loadStudents(studentTable);
+				boolean hasRel = StudentService.checkStudentHasRelation(s.getStudentId());
+				if (hasRel) {
+					isConfirmed = AlertDialog.showConfirm("Confirm",
+							"This student has enrolled course. Do you want to delete enrollment as well?");
+
+					if (!isConfirmed) {
+						AlertDialog.showWarning("Delete", "Deletion canceled");
+						return;
+
 					}
-				} catch (IOException e) {
-					AlertDialog.showWarning("Error", "Failed to delete student due to an IO error.");
+				}
+
+				boolean isSuccess = StudentService.deleteStudent(s.getStudentId());
+				if (isSuccess) {
+					AlertDialog.showSuccess("Success", "Successfully deleted student: " + s.getStudentId());
+					loadStudents(studentTable);
 				}
 			} catch (DataNotFoundException e) {
 				AlertDialog.showWarning("Result not found", e.getMessage());
 			} catch (CRUDFailedException e) {
 				AlertDialog.showWarning("Error", e.getMessage());
+			} catch (IOException e) {
+				AlertDialog.showWarning("Error", "Failed to delete student due to an IO error.");
 			}
 		} else {
 			AlertDialog.showWarning("Delete", "Deletion canceled");
