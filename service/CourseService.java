@@ -131,7 +131,7 @@ public class CourseService {
 
 		boolean hasStudents = CourseAssignService.checkStudentAssignedToCourse(courseId);
 		boolean hasInstructor = CourseAssignService.checkIntructorAssignedToCourse(courseId);
-		return hasStudents && hasInstructor;
+		return hasStudents || hasInstructor;
 	}
 
 	public static boolean deleteCourse(int courseId) throws DataNotFoundException, CRUDFailedException, IOException {
