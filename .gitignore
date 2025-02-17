@@ -1,15 +1,19 @@
-/Course.class
-/CourseManagementSystem.class
-/Instructor.class
-/InvalidCSVFormatException.class
-/Person.class
-/Student.class
-.classpath
-.DS_Store
-data/.DS_Store
-data/courses.dat
-data/instructors.dat
-/Main.class
-.classpath
-view/AddStudentForm.class
+# Java build files
 *.class
+*.jar
+*.war
+*.ear
+
+# macOS system files
+.DS_Store
+
+# Eclipse / IntelliJ / VS Code build files
+/.idea/
+/.vscode/
+/bin/
+/target/
+/out/
+/*.iml
+/.classpath
+/.project
+/.settings/
