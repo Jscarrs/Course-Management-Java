@@ -14,6 +14,13 @@
 	<natures>
 		<nature>org.eclipse.jdt.core.javanature</nature>
 	</natures>
+	<linkedResources>
+		<link>
+			<name>resources</name>
+			<type>2</type>
+			<location>/Users/ari/eclipse-workspace/HibernateJ2SEApp/src/resources</location>
+		</link>
+	</linkedResources>
 	<filteredResources>
 		<filter>
 			<id>1738366853277</id>
