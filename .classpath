@@ -7,29 +7,29 @@
 	</classpathentry>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="src" path="resources"/>
-	<classpathentry kind="lib" path="/Users/ari/Documents/GitHub/Course-Management-Java/lib/ojdbc8.jar"/>
-	<classpathentry kind="lib" path="/Users/ari/Documents/GitHub/Course-Management-Java/lib/jboss-logging-3.5.3.Final.jar"/>
-	<classpathentry kind="lib" path="/Users/ari/Documents/GitHub/Course-Management-Java/lib/jaxb-runtime-3.0.2.jar"/>
-	<classpathentry kind="lib" path="/Users/ari/Documents/GitHub/Course-Management-Java/lib/jaxb-impl-3.0.2.jar"/>
-	<classpathentry kind="lib" path="/Users/ari/Documents/GitHub/Course-Management-Java/lib/jaxb-core-3.0.2.jar"/>
-	<classpathentry kind="lib" path="/Users/ari/Documents/GitHub/Course-Management-Java/lib/javafx.web.jar"/>
-	<classpathentry kind="lib" path="/Users/ari/Documents/GitHub/Course-Management-Java/lib/javafx.swing.jar"/>
-	<classpathentry kind="lib" path="/Users/ari/Documents/GitHub/Course-Management-Java/lib/javafx.media.jar"/>
-	<classpathentry kind="lib" path="/Users/ari/Documents/GitHub/Course-Management-Java/lib/javafx.graphics.jar"/>
-	<classpathentry kind="lib" path="/Users/ari/Documents/GitHub/Course-Management-Java/lib/javafx.fxml.jar"/>
-	<classpathentry kind="lib" path="/Users/ari/Documents/GitHub/Course-Management-Java/lib/javafx.controls.jar"/>
-	<classpathentry kind="lib" path="/Users/ari/Documents/GitHub/Course-Management-Java/lib/javafx.base.jar"/>
-	<classpathentry kind="lib" path="/Users/ari/Documents/GitHub/Course-Management-Java/lib/javafx-swt.jar"/>
-	<classpathentry kind="lib" path="/Users/ari/Documents/GitHub/Course-Management-Java/lib/jakarta.xml.bind-api-3.0.1.jar"/>
-	<classpathentry kind="lib" path="/Users/ari/Documents/GitHub/Course-Management-Java/lib/jakarta.transaction-api-2.0.1.jar"/>
-	<classpathentry kind="lib" path="/Users/ari/Documents/GitHub/Course-Management-Java/lib/jakarta.persistence-api-3.1.0.jar"/>
-	<classpathentry kind="lib" path="/Users/ari/Documents/GitHub/Course-Management-Java/lib/jakarta.activation-api-2.0.1.jar"/>
-	<classpathentry kind="lib" path="/Users/ari/Documents/GitHub/Course-Management-Java/lib/istack-commons-runtime-4.0.0.jar"/>
-	<classpathentry kind="lib" path="/Users/ari/Documents/GitHub/Course-Management-Java/lib/hibernate-validator-8.0.0.Final.jar"/>
-	<classpathentry kind="lib" path="/Users/ari/Documents/GitHub/Course-Management-Java/lib/hibernate-core-6.6.7.Final.jar"/>
-	<classpathentry kind="lib" path="/Users/ari/Documents/GitHub/Course-Management-Java/lib/hibernate-commons-annotations-6.0.6.Final.jar"/>
-	<classpathentry kind="lib" path="/Users/ari/Documents/GitHub/Course-Management-Java/lib/classmate-1.5.1.jar"/>
-	<classpathentry kind="lib" path="/Users/ari/Documents/GitHub/Course-Management-Java/lib/byte-buddy-1.14.4.jar"/>
-	<classpathentry kind="lib" path="/Users/ari/Documents/GitHub/Course-Management-Java/lib/antlr4-runtime-4.13.0.jar"/>
+	<classpathentry kind="lib" path="lib/antlr4-runtime-4.13.0.jar"/>
+	<classpathentry kind="lib" path="lib/byte-buddy-1.14.4.jar"/>
+	<classpathentry kind="lib" path="lib/classmate-1.5.1.jar"/>
+	<classpathentry kind="lib" path="lib/hibernate-commons-annotations-6.0.6.Final.jar"/>
+	<classpathentry kind="lib" path="lib/hibernate-core-6.6.7.Final.jar"/>
+	<classpathentry kind="lib" path="lib/hibernate-validator-8.0.0.Final.jar"/>
+	<classpathentry kind="lib" path="lib/istack-commons-runtime-4.0.0.jar"/>
+	<classpathentry kind="lib" path="lib/jakarta.activation-api-2.0.1.jar"/>
+	<classpathentry kind="lib" path="lib/jakarta.persistence-api-3.1.0.jar"/>
+	<classpathentry kind="lib" path="lib/jakarta.transaction-api-2.0.1.jar"/>
+	<classpathentry kind="lib" path="lib/jakarta.xml.bind-api-3.0.1.jar"/>
+	<classpathentry kind="lib" path="lib/javafx.base.jar"/>
+	<classpathentry kind="lib" path="lib/javafx.controls.jar"/>
+	<classpathentry kind="lib" path="lib/javafx.fxml.jar"/>
+	<classpathentry kind="lib" path="lib/javafx.graphics.jar"/>
+	<classpathentry kind="lib" path="lib/javafx.media.jar"/>
+	<classpathentry kind="lib" path="lib/javafx.swing.jar"/>
+	<classpathentry kind="lib" path="lib/javafx.web.jar"/>
+	<classpathentry kind="lib" path="lib/javafx-swt.jar"/>
+	<classpathentry kind="lib" path="lib/jaxb-core-3.0.2.jar"/>
+	<classpathentry kind="lib" path="lib/jaxb-impl-3.0.2.jar"/>
+	<classpathentry kind="lib" path="lib/jaxb-runtime-3.0.2.jar"/>
+	<classpathentry kind="lib" path="lib/jboss-logging-3.5.3.Final.jar"/>
+	<classpathentry kind="lib" path="lib/ojdbc8.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
