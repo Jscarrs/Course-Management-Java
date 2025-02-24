@@ -3,22 +3,22 @@
     // 暫留以檢視現有屬性的描述。
     // 如需詳細資訊，請瀏覽: https://go.microsoft.com/fwlink/?linkid=830387
     "version": "0.2.0",
+
     "configurations": [
-        
         {
             "type": "java",
             "name": "Main",
             "request": "launch",
-            "mainClass": "Main",
+            "mainClass": "com.team2.main.Main",
             "projectName": "Course-Management-Java",
-            "vmArgs": "--module-path lib --add-modules javafx.controls,javafx.fxml,javafx.graphics,javafx.base"
+            "vmArgs": "--module-path /Users/samuellaw/Documents/GitHub/Course-Management-Java/lib --add-modules javafx.controls,javafx.fxml,javafx.graphics,javafx.base -Dprism.verbose=true -Dprism.order=sw"
         },
         {
             "type": "java",
             "name": "Current File",
             "request": "launch",
-            "vmArgs": "--module-path lib --add-modules javafx.controls,javafx.fxml,javafx.graphics,javafx.base",
-            "mainClass": "${file}"
+            "mainClass": "${file}",
+            "vmArgs": "--module-path /Users/samuellaw/Documents/GitHub/Course-Management-Java/lib --add-modules javafx.controls,javafx.fxml,javafx.graphics,javafx.base -Dprism.verbose=true -Dprism.order=sw"
         }
     ]
 }

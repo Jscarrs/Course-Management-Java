@@ -14,7 +14,7 @@ public class HibernateUtil {
 
 	private static SessionFactory buildSessionFactory() {
 		try {
-			return new Configuration().configure("hibernate.cfg.xml").addAnnotatedClass(Instructor.class)
+			return new Configuration().configure("/resources/hibernate.cfg.xml").addAnnotatedClass(Instructor.class)
 					.addAnnotatedClass(Student.class).addAnnotatedClass(Course.class).addAnnotatedClass(StudentCourseId.class)
 					.addAnnotatedClass(StudentCourse.class).buildSessionFactory();
 		} catch (Throwable ex) {
